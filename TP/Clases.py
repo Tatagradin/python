@@ -12,7 +12,7 @@ class Conexion:
                  tipo_transporte: str, tipo_restriccion: str = None, restriccion = None):
         self.ciudad1 = ciudad1
         self.ciudad2 = ciudad2
-        self.distancia = distancia  # en km
+        self.distancia = distancia  # en kilometross
         self.tipo_transporte = tipo_transporte  # 'aereo', 'ferroviario', etc.
         self.tipo_restriccion = tipo_restriccion  # 'peso', 'velocidad', etc.
         self.restriccion = restriccion  # valor numérico
