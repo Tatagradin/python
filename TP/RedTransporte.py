@@ -1,6 +1,7 @@
 
-from Conexion import Conexiones
+from Conexiones import Conexion
 from Clases import Ciudad
+from Vehiculos import *
 class RedTransporte:
     def __init__(self):
         self.ciudades = {}        # Diccionario para almacenar las ciudades por nombre
