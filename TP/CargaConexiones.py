@@ -1,5 +1,5 @@
 from Conexiones import Conexion
-from Clases import Ciudad
+from Ciudad import Ciudad
 from Vehiculos import *
 from RedTransporte import RedTransporte
 

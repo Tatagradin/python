@@ -12,7 +12,7 @@ class Vehiculo:
 
 class Ferroviario(Vehiculo):
     def __init__(self):
-        super().__init__("Tren", 100, 150000, 100, None, 3)  # todo fijo excepto costo por km
+        super().__init__("Ferroviaria", 100, 150000, 100, None, 3)  # todo fijo excepto costo por km
 
     def calcular_costo_por_km(self, distancia):
         return 20 if distancia < 200 else 15
@@ -20,7 +20,7 @@ class Ferroviario(Vehiculo):
 
 class Automotor(Vehiculo):
     def __init__(self):
-        super().__init__("Camión", 80, 30000, 30, 5, None)  # todo fijo excepto costo por kg
+        super().__init__("Automotor", 80, 30000, 30, 5, None)  # todo fijo excepto costo por kg
 
     def calcular_costo_por_kg(self, peso):
         return 1 if peso < 15000 else 2
@@ -28,7 +28,7 @@ class Automotor(Vehiculo):
 
 class Maritimo(Vehiculo):
     def __init__(self):
-        super().__init__("Barco", 40, 100000, None, 15, 2)  # todo fijo excepto costo fijo
+        super().__init__("Fluvial", 40, 100000, None, 15, 2)  # todo fijo excepto costo fijo
 
     def calcular_costo_fijo(self, tipo):
         if tipo == "fluvial":
@@ -40,7 +40,7 @@ class Maritimo(Vehiculo):
 
 class Aereo(Vehiculo):
     def __init__(self):
-        super().__init__("Avión", 600, 5000, 750, 40, 10)  # todo fijo excepto velocidad
+        super().__init__("Aerea", 600, 5000, 750, 40, 10)  # todo fijo excepto velocidad
 
     def calcular_velocidad(self, prob_mal_tiempo=None):
         if prob_mal_tiempo is not None and prob_mal_tiempo > 0:

@@ -1,41 +1,59 @@
-
 from Conexiones import Conexion
-from Clases import Ciudad
+from Ciudad import Ciudad
 from Vehiculos import *
 from RedTransporte import RedTransporte
+from Solicitud import Solicitud
 
 import csv
 
 class CargadorDeDatos:
     def __init__(self, red_transporte):
         """
-        Constructor que recibe una instancia de la clase RedTransporte para agregar las ciudades y conexiones.
+        Constructor que recibe una instancia de la clase RedTransporte para agregar las solicitudes.
         """
         self.red_transporte = red_transporte
 
     def cargar_solicitudes(self, archivo_solicitudes):
         """Carga las solicitudes desde un archivo CSV y las agrega a la red de transporte."""
-        with open(archivo_solicitudes, mode='r') as file:
-            reader = csv.reader(file)
-            next(reader)  # Saltar la primera fila (cabecera del archivo)
-            for row in reader:
-                if len(row) < 4:  # Verificar que la fila tiene al menos 4 elementos
-                    print(f"Fila ignorada debido a formato incorrecto: {row}")
-                    continue  # Si la fila no tiene 4 columnas, se ignora
+        try:
+            with open(archivo_solicitudes, mode='r') as file:
+                reader = csv.reader(file)
+                next(reader)  # Saltar la primera fila (cabecera del archivo)
+                for row in reader:
+                    if len(row) < 4:  # Verificar que la fila tiene al menos 4 elementos
+                        print(f"Fila ignorada debido a formato incorrecto: {row}")
+                        continue
 
-                id_solicitud = row[0]  # `id_carga`
-                peso = int(row[1])  # `peso_kg`
-                origen = row[2]  # `origen`
-                destino = row[3]  # `destino`
+                    id_solicitud = row[0]  # `id_carga`
+                    try:
+                        peso = int(row[1])  # `peso_kg`
+                    except ValueError:
+                        print(f"Error: El peso debe ser un número entero. Fila ignorada: {row}")
+                        continue
 
-                # Obtener las ciudades de la red de transporte
-                ciudad_origen = self.red_transporte.get_ciudad(origen)
-                ciudad_destino = self.red_transporte.get_ciudad(destino)
+                    origen = row[2]  # `origen`
+                    destino = row[3]  # `destino`
 
-                if ciudad_origen and ciudad_destino:
+                    # Obtener las ciudades de la red de transporte
+                    ciudad_origen = self.red_transporte.get_ciudad(origen)
+                    ciudad_destino = self.red_transporte.get_ciudad(destino)
+
+                    if not ciudad_origen:
+                        print(f"Error: Ciudad de origen '{origen}' no encontrada. Fila ignorada: {row}")
+                        continue
+                    if not ciudad_destino:
+                        print(f"Error: Ciudad de destino '{destino}' no encontrada. Fila ignorada: {row}")
+                        continue
+
                     # Crear la solicitud con los datos
-                    solicitud = solicitud(id_solicitud, peso, ciudad_origen, ciudad_destino)
-                    self.red_transporte.agregar_solicitud(solicitud)  # Agregar la solicitud a la red
+                    solicitud = Solicitud(id_solicitud, peso, ciudad_origen, ciudad_destino)
+                    self.red_transporte.agregar_solicitud(solicitud)
+                    print(f"Solicitud cargada: {solicitud}")
+
+        except FileNotFoundError:
+            print(f"Error: No se encontró el archivo {archivo_solicitudes}")
+        except Exception as e:
+            print(f"Error al cargar solicitudes: {str(e)}")
 
 # Uso de la clase CargadorDeDatos
 # Suponiendo que tienes la clase RedTransporte ya definida
