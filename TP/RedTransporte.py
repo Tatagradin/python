@@ -2,6 +2,8 @@
 from Conexiones import Conexion
 from Clases import Ciudad
 from Vehiculos import *
+
+
 class RedTransporte:
     def __init__(self):
         self.ciudades = {}        # Diccionario para almacenar las ciudades por nombre
@@ -51,47 +53,3 @@ class RedTransporte:
 
             conexiones_validas.append(conexion)
         return conexiones_validas
-
-# Ejemplo de uso:
-
-# Crear las ciudades
-zarate = Ciudad("Zárate")
-ba = Ciudad("Buenos Aires")
-mdp = Ciudad("Mar del Plata")
-junin = Ciudad("Junín")
-laplata = Ciudad("La Plata")
-
-# Crear la red de transporte
-red = RedTransporte()
-
-# Agregar las ciudades a la red
-red.agregar_ciudad(zarate)
-red.agregar_ciudad(ba)
-red.agregar_ciudad(mdp)
-red.agregar_ciudad(junin)
-red.agregar_ciudad(laplata)
-
-# Crear las conexiones
-conexion1 = Conexion(zarate, ba, 100, "automotor")
-conexion2 = Conexion(ba, mdp, 500, "aereo")
-conexion3 = Conexion(zarate, junin, 300, "ferroviario")
-conexion4 = Conexion(junin, mdp, 400, "automotor")
-
-# Agregar las conexiones a la red
-red.agregar_conexion(conexion1)
-red.agregar_conexion(conexion2)
-red.agregar_conexion(conexion3)
-red.agregar_conexion(conexion4)
-
-# Ver las conexiones de Zárate
-print("Conexiones desde Zárate:")
-for c in red.get_conexiones_desde("Zárate"):
-    print(c)
-
-# Filtrar las conexiones válidas para un vehículo
-vehiculo = Automotor()  # Usamos un vehículo de tipo "Camión"
-conexiones_validas = red.filtrar_conexiones_validas(vehiculo)
-
-print("\nConexiones válidas para un vehículo Automotor:")
-for c in conexiones_validas:
-    print(c)
