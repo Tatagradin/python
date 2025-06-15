@@ -5,3 +5,4 @@ class Ciudad:
 
     def agregar_conexion(self, conexion):
         self.posibles_conexiones.append(conexion)  # agregar al final de la lista
+
