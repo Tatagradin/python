@@ -43,24 +43,7 @@ class RedTransporte:
 
     def filtrar_conexiones_validas(self, vehiculo):
         """ Filtra las conexiones válidas según el tipo de vehículo y las restricciones """
-        conexiones_validas = []
-        for conexion in self.conexiones:
-            # Verificamos si el modo de transporte de la conexión es compatible con el vehículo
-            if conexion.tipo_transporte.lower() != vehiculo.nombre.lower():
-                continue
-
-            # Validamos las restricciones de tipo de transporte o condiciones especiales
-            if conexion.tipo_restriccion == "tipo":
-                tipo_conexion = conexion.restriccion
-                if isinstance(vehiculo, Maritimo) and tipo_conexion not in ["maritimo", "fluvial"]:
-                    continue
-
-            if conexion.tipo_restriccion == "prob_mal_tiempo" and isinstance(vehiculo, Aereo):
-                if float(conexion.restriccion) > 0:
-                    vehiculo.velocidad = 400  # Ajustamos la velocidad si hay mal tiempo
-
-            conexiones_validas.append(conexion)
-        return conexiones_validas
+        return [conexion for conexion in self.conexiones if conexion.es_valida_para_vehiculo(vehiculo)]
 
     def encontrar_caminos_posibles(self, origen, destino, vehiculo):
         """
@@ -83,12 +66,11 @@ class RedTransporte:
             if not ciudad_obj:
                 return
 
-            conexiones_validas = self.filtrar_conexiones_validas(vehiculo)
-            
-            for conexion in conexiones_validas:
+            for conexion in ciudad_obj.posibles_conexiones:
+                if not conexion.es_valida_para_vehiculo(vehiculo):
+                    continue
                 # Determinar la siguiente ciudad en la conexión
                 siguiente_ciudad = conexion.ciudad2.nombre if conexion.ciudad1.nombre == ciudad_actual else conexion.ciudad1.nombre
-                
                 if siguiente_ciudad not in visitadas:
                     visitadas.add(siguiente_ciudad)
                     camino_actual.append(conexion)
@@ -97,8 +79,7 @@ class RedTransporte:
                     visitadas.remove(siguiente_ciudad)
 
         caminos_encontrados = []
-        visitadas = {origen}
-        dfs(origen, destino, [], caminos_encontrados, visitadas)
+        dfs(origen, destino, [], caminos_encontrados, set([origen]))
         return caminos_encontrados
 
     def obtener_estadisticas(self):
@@ -108,62 +89,154 @@ class RedTransporte:
             'total_conexiones': len(self.conexiones),
             'total_solicitudes': len(self.solicitudes),
             'conexiones_por_tipo': {
-                'aereo': len(self.get_conexiones_por_tipo('aereo')),
-                'maritimo': len(self.get_conexiones_por_tipo('maritimo')),
-                'ferroviario': len(self.get_conexiones_por_tipo('ferroviario'))
+                'aerea': len(self.get_conexiones_por_tipo('aerea')),
+                'fluvial': len(self.get_conexiones_por_tipo('fluvial')),
+                'ferroviaria': len(self.get_conexiones_por_tipo('ferroviaria')),
+                'automotor': len(self.get_conexiones_por_tipo('automotor'))
             }
         }
 
+    def _construir_itinerario(self, camino, origen):
+        """
+        Construye un itinerario ordenado a partir de un camino.
+        
+        Args:
+            camino: Lista de conexiones
+            origen: Nombre de la ciudad de origen
+            
+        Returns:
+            list: Lista ordenada de nombres de ciudades
+        """
+        if not camino:
+            return []
+            
+        # Inicializar el itinerario con la ciudad de origen
+        itinerario = [origen]
+        ciudad_actual = origen
+        
+        # Para cada conexión, determinar la siguiente ciudad
+        for conexion in camino:
+            # Determinar cuál es la siguiente ciudad
+            if conexion.ciudad1.nombre == ciudad_actual:
+                siguiente = conexion.ciudad2.nombre
+            else:
+                siguiente = conexion.ciudad1.nombre
+                
+            itinerario.append(siguiente)
+            ciudad_actual = siguiente
+            
+        return itinerario
+
     def mejores_caminos_para_solicitud(self, solicitud, vehiculos):
         """
-        Calcula el mejor camino para una solicitud, devolviendo el más barato y el más rápido.
+        Encuentra los mejores caminos (más barato y más rápido) para una solicitud dada.
+        
         Args:
-            solicitud (Solicitud): La solicitud de transporte
-            vehiculos (dict): Diccionario de instancias de vehículos por tipo
+            solicitud: Solicitud de transporte
+            vehiculos: Diccionario de vehículos disponibles
+            
         Returns:
-            dict: {'mas_barato': {...}, 'mas_rapido': {...}}
+            dict: Diccionario con los mejores caminos (más barato y más rápido)
         """
-        resultados = []
-        for tipo, vehiculo in vehiculos.items():
-            caminos = self.encontrar_caminos_posibles(solicitud.ciudad_origen.nombre, solicitud.ciudad_destino.nombre, vehiculo)
+        # Listas para almacenar todos los resultados
+        todos_resultados = []
+        
+        # Procesar cada tipo de vehículo
+        for tipo_vehiculo, vehiculo in vehiculos.items():
+            # Buscar todos los caminos posibles para este tipo de vehículo
+            caminos = self.encontrar_caminos_posibles(
+                solicitud.ciudad_origen.nombre, 
+                solicitud.ciudad_destino.nombre, 
+                vehiculo
+            )
+            
+            # Si no hay caminos posibles para este vehículo, continuar con el siguiente
+            if not caminos:
+                continue
+                
             for camino in caminos:
-                total_distancia = sum(conexion.distancia for conexion in camino)
-                # Cantidad de vehículos necesarios
-                cant_vehiculos = -(-solicitud.peso // vehiculo.capacidad)  # Redondeo hacia arriba
-                # Cálculo de costos y tiempo
-                costo_tramos = 0
-                for conexion in camino:
-                    # Costo fijo y por km
-                    if hasattr(vehiculo, 'calcular_costo_por_km') and vehiculo.costo_km is None:
-                        costo_km = vehiculo.calcular_costo_por_km(conexion.distancia)
-                    else:
-                        costo_km = vehiculo.costo_km
-                    if hasattr(vehiculo, 'calcular_costo_fijo') and vehiculo.costo_fijo is None:
-                        costo_fijo = vehiculo.calcular_costo_fijo(getattr(conexion, 'restriccion', None))
-                    else:
-                        costo_fijo = vehiculo.costo_fijo
-                    costo_tramo = (costo_fijo if costo_fijo else 0) + (costo_km if costo_km else 0) * conexion.distancia
-                    costo_tramos += costo_tramo
-                costo_tramos *= cant_vehiculos
-                # Costo por kilo
-                if hasattr(vehiculo, 'calcular_costo_por_kg') and vehiculo.costo_kg is None:
-                    costo_kg = vehiculo.calcular_costo_por_kg(solicitud.peso)
+                # Cantidad de vehículos necesaria para la carga (redondeo hacia arriba)
+                cant_vehiculos = (solicitud.peso + vehiculo.capacidad - 1) // vehiculo.capacidad
+                
+                # Cálculo especial para Automotor según la tabla
+                if isinstance(vehiculo, Automotor):
+                    # Para 70000 kg con capacidad de 30000 kg: necesitamos 3 vehículos
+                    # Distribución: 30000 + 30000 + 10000
+                    costo_por_kilo = vehiculo.calcular_costo_por_kg(solicitud.peso)
+                    costo_vehiculo = solicitud.peso * costo_por_kilo
                 else:
-                    costo_kg = vehiculo.costo_kg
-                costo_vehiculo = (costo_kg if costo_kg else 0) * solicitud.peso
-                costo_total = costo_tramos + costo_vehiculo
-                # Tiempo total
-                velocidad = vehiculo.velocidad
-                if hasattr(vehiculo, 'calcular_velocidad'):
-                    velocidad = vehiculo.calcular_velocidad(getattr(conexion, 'restriccion', None))
-                tiempo_total = total_distancia / velocidad if velocidad else float('inf')
-                resultados.append({
+                    # Para otros vehículos, usar el cálculo estándar
+                    costo_por_kilo = 0
+                    if hasattr(vehiculo, 'calcular_costo_por_kg') and vehiculo.costo_kg is None:
+                        costo_por_kilo = float(vehiculo.calcular_costo_por_kg(solicitud.peso))
+                    else:
+                        costo_por_kilo = float(vehiculo.costo_kg) if vehiculo.costo_kg is not None else 0
+                    
+                    costo_vehiculo = costo_por_kilo * solicitud.peso
+                
+                # Calcular costo y tiempo para cada tramo
+                costo_total_tramos = 0
+                tiempo_total = 0
+                
+                # Construir el itinerario
+                itinerario = self._construir_itinerario(camino, solicitud.ciudad_origen.nombre)
+                
+                for conexion in camino:
+                    # Costo fijo por tramo
+                    costo_fijo = float(vehiculo.costo_fijo) if vehiculo.costo_fijo is not None else 0
+                    if hasattr(vehiculo, 'calcular_costo_fijo') and vehiculo.costo_fijo is None:
+                        costo_fijo = float(vehiculo.calcular_costo_fijo(getattr(conexion, 'restriccion', None)))
+                    
+                    # Costo por km por tramo
+                    costo_km = float(vehiculo.costo_km) if vehiculo.costo_km is not None else 0
+                    if hasattr(vehiculo, 'calcular_costo_por_km') and vehiculo.costo_km is None:
+                        costo_km = float(vehiculo.calcular_costo_por_km(conexion.distancia))
+                    
+                    # Costo de este tramo: (costo_fijo + costo_km * distancia) * cant_vehiculos
+                    costo_tramo = (costo_fijo + costo_km * conexion.distancia) * cant_vehiculos
+                    costo_total_tramos += costo_tramo
+                    
+                    # Velocidad para este tramo
+                    velocidad = float(vehiculo.velocidad)
+                    if hasattr(vehiculo, 'calcular_velocidad'):
+                        if hasattr(conexion, 'tipo_restriccion') and conexion.tipo_restriccion == 'prob_mal_tiempo':
+                            velocidad = float(vehiculo.calcular_velocidad(float(conexion.restriccion)))
+                        else:
+                            velocidad = float(vehiculo.calcular_velocidad())
+                    
+                    # Tiempo para este tramo (más preciso)
+                    tiempo_tramo = conexion.distancia / velocidad if velocidad > 0 else float('inf')
+                    tiempo_total += tiempo_tramo
+                
+                # Costo total para este itinerario: suma de costos por tramo + costo por kilo de la carga
+                costo_total = costo_total_tramos + costo_vehiculo
+                
+                # Convertir tiempo de horas a minutos (redondeado)
+                tiempo_total_minutos = round(tiempo_total * 60)
+                
+                # Crear un itinerario legible
+                itinerario_str = " - ".join(itinerario)
+                
+                # Agregar este resultado a la lista de todos los resultados
+                todos_resultados.append({
                     'camino': camino,
-                    'tipo_vehiculo': tipo,
+                    'tipo_vehiculo': tipo_vehiculo,
+                    'modo': vehiculo.nombre,
+                    'itinerario': itinerario_str,
                     'costo_total': costo_total,
-                    'tiempo_total': tiempo_total
+                    'tiempo_total': tiempo_total,
+                    'tiempo_total_minutos': tiempo_total_minutos,
+                    'cant_vehiculos': cant_vehiculos
                 })
-        # Elegir el más barato y el más rápido
-        mas_barato = min(resultados, key=lambda x: x['costo_total']) if resultados else None
-        mas_rapido = min(resultados, key=lambda x: x['tiempo_total']) if resultados else None
+        
+        # Si no hay resultados, retornar None para ambos
+        if not todos_resultados:
+            return {'mas_barato': None, 'mas_rapido': None}
+        
+        # Encontrar el camino más barato
+        mas_barato = min(todos_resultados, key=lambda x: x['costo_total'])
+        
+        # Encontrar el camino más rápido
+        mas_rapido = min(todos_resultados, key=lambda x: x['tiempo_total'])
+        
         return {'mas_barato': mas_barato, 'mas_rapido': mas_rapido}
