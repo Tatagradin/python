@@ -5,6 +5,7 @@ from CargaNodos import CargadorDeNodos
 from Ciudad import Ciudad
 from Vehiculos import Aereo, Ferroviario, Maritimo, Automotor
 from Conexiones import Conexion
+from mostrar_mejores_caminos import mostrar_mejores_caminos
 
 def inicializar_red_transporte():
     """
@@ -21,19 +22,28 @@ def inicializar_red_transporte():
         print("\n1. Cargando nodos desde nodos.csv...")
         cargador_nodos = CargadorDeNodos(red_transporte)
         cargador_nodos.cargar_nodos('TP/nodos.csv')
-        print(f"✓ Nodos cargados: {len(red_transporte.ciudades)} ciudades")
+        num_ciudades = len(red_transporte.ciudades)
+        if num_ciudades == 0:
+            raise Exception("No se pudieron cargar las ciudades. Verifique el archivo nodos.csv")
+        print(f"✓ Nodos cargados: {num_ciudades} ciudades")
         
         # 2. Cargar conexiones
         print("\n2. Cargando conexiones desde conexiones.csv...")
         cargador_conexiones = CargadorDeConexiones(red_transporte)
         cargador_conexiones.cargar_conexiones('TP/conexiones.csv')
-        print(f"✓ Conexiones cargadas: {len(red_transporte.conexiones)} conexiones")
+        num_conexiones = len(red_transporte.conexiones)
+        if num_conexiones == 0:
+            raise Exception("No se pudieron cargar las conexiones. Verifique el archivo conexiones.csv")
+        print(f"✓ Conexiones cargadas: {num_conexiones} conexiones")
         
         # 3. Cargar solicitudes
         print("\n3. Cargando solicitudes desde solicitudes.csv...")
         cargador_solicitudes = CargadorDeDatos(red_transporte)
         cargador_solicitudes.cargar_solicitudes('TP/solicitudes.csv')
-        print(f"✓ Solicitudes cargadas: {len(red_transporte.solicitudes)} solicitudes")
+        num_solicitudes = len(red_transporte.solicitudes)
+        if num_solicitudes == 0:
+            raise Exception("No se pudieron cargar las solicitudes. Verifique el archivo solicitudes.csv")
+        print(f"✓ Solicitudes cargadas: {num_solicitudes} solicitudes")
         
         return red_transporte
         
@@ -89,19 +99,6 @@ def probar_caminos_posibles(red_transporte, origen, destino, vehiculo):
 def obtener_tipos_transporte(red_transporte):
     """Obtiene los tipos de transporte únicos de las conexiones"""
     return list(set(c.tipo_transporte.lower() for c in red_transporte.conexiones))
-
-def mostrar_mejores_caminos(red_transporte, vehiculos):
-    print("\n=== Mejores caminos para cada solicitud ===")
-    for solicitud in red_transporte.solicitudes:
-        print(f"\nSolicitud: {solicitud}")
-        resultados = red_transporte.mejores_caminos_para_solicitud(solicitud, vehiculos)
-        for clave, resultado in resultados.items():
-            if resultado is None:
-                print(f"No hay camino {clave.replace('_', ' ')} disponible.")
-                continue
-            camino_str = ' -> '.join([c.ciudad1.nombre + '→' + c.ciudad2.nombre for c in resultado['camino']])
-            print(f"{clave.replace('_', ' ').capitalize()}:\n  Vehículo: {resultado['tipo_vehiculo']}\n  Camino: {camino_str}\n  Costo total: ${resultado['costo_total']:.2f}\n  Tiempo total: {resultado['tiempo_total']:.2f} h")
-
 def main():
     """
     Función principal que ejecuta el programa.
