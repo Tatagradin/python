@@ -116,33 +116,6 @@ def main():
         tipos_transporte = obtener_tipos_transporte(red_transporte)
         print(f"\nTipos de transporte disponibles: {', '.join(tipos_transporte)}")
         
-        # === INICIO: SECCIÓN DE PRUEBAS COMENTADA ===
-        # print("\n=== Realizando pruebas ===")
-        # 
-        # # Probar conexiones para cada tipo de transporte
-        # for tipo in tipos_transporte:
-        #     # Usar la primera ciudad disponible para las pruebas
-        #     primera_ciudad = next(iter(red_transporte.ciudades.values()))
-        #     probar_conexiones_desde_ciudad(red_transporte, primera_ciudad.nombre, tipo)
-        # 
-        # # Probar caminos con diferentes vehículos
-        # vehiculos = {
-        #     'aereo': Aereo(),
-        #     'maritimo': Maritimo(),
-        #     'ferroviario': Ferroviario(),
-        #     'automotor': Automotor()
-        # }
-        # 
-        # # Probar rutas con cada tipo de vehículo disponible
-        # ciudades = list(red_transporte.ciudades.keys())
-        # if len(ciudades) >= 2:
-        #     origen = ciudades[0]
-        #     destino = ciudades[1]
-        #     for tipo, vehiculo in vehiculos.items():
-        #         if tipo in tipos_transporte:
-        #             probar_caminos_posibles(red_transporte, origen, destino, vehiculo)
-        # === FIN: SECCIÓN DE PRUEBAS COMENTADA ===
-        
         # Mostrar estadísticas de la red
         print("\n=== Estadísticas de la red ===")
         stats = red_transporte.obtener_estadisticas()
