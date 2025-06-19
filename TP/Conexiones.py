@@ -35,25 +35,15 @@ class Conexion:
         Returns:
             bool: True si la conexión es válida para el vehículo, False en caso contrario
         """
-        # Mapeo de tipos de vehículos a tipos de conexión
-        tipo_mapping = {
-            'ferroviaria': 'ferroviaria',
-            'automotor': 'automotor',
-            'fluvial': 'fluvial',
-            'aerea': 'aerea'
-        }
-        
+
         # Verificar si el tipo de transporte coincide
         tipo_vehiculo = vehiculo.nombre.lower()
         tipo_conexion = self.tipo_transporte.lower()
-        
-        if tipo_mapping.get(tipo_vehiculo) != tipo_conexion:
-            return False
-        
-        #tipos_validos = ['ferroviaria', 'automotor', 'fluvial', 'aerea']
 
-        #if tipo_vehiculo not in tipos_validos or tipo_vehiculo != tipo_conexion:
-        #    return False
+        tipos_validos = ['ferroviaria', 'automotor', 'fluvial', 'aerea']
+
+        if tipo_vehiculo not in tipos_validos or tipo_vehiculo != tipo_conexion:
+            return False
             
         # Verificar restricciones específicas
         if self.tipo_restriccion == 'velocidad_max':
