@@ -49,6 +49,11 @@ class Conexion:
         
         if tipo_mapping.get(tipo_vehiculo) != tipo_conexion:
             return False
+        
+        #tipos_validos = ['ferroviaria', 'automotor', 'fluvial', 'aerea']
+
+        #if tipo_vehiculo not in tipos_validos or tipo_vehiculo != tipo_conexion:
+        #    return False
             
         # Verificar restricciones específicas
         if self.tipo_restriccion == 'velocidad_max':
