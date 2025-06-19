@@ -39,11 +39,11 @@ class RedTransporte:
 
     def get_conexiones_por_tipo(self, tipo_transporte):
         """ Devuelve todas las conexiones de un tipo específico de transporte """
-        return [c for c in self.conexiones if c.tipo_transporte.lower() == tipo_transporte.lower()]
+        return list(filter(lambda c: c.tipo_transporte.lower() == tipo_transporte.lower(), self.conexiones))
 
     def filtrar_conexiones_validas(self, vehiculo):
         """ Filtra las conexiones válidas según el tipo de vehículo y las restricciones """
-        return [conexion for conexion in self.conexiones if conexion.es_valida_para_vehiculo(vehiculo)]
+        return list(filter(lambda conexion: conexion.es_valida_para_vehiculo(vehiculo), self.conexiones))
 
     def encontrar_caminos_posibles(self, origen, destino, vehiculo):
         """
