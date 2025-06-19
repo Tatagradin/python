@@ -31,18 +31,18 @@ class CargadorDeDatos:
                         print(f"Error: El peso debe ser un número entero. Fila ignorada: {row}")
                         continue
 
-                    origen = row[2]  # `origen`
-                    destino = row[3]  # `destino`
+                    origen = row[2].strip()  # `origen` - eliminar espacios en blanco
+                    destino = row[3].strip()  # `destino` - eliminar espacios en blanco
 
                     # Obtener las ciudades de la red de transporte
                     ciudad_origen = self.red_transporte.get_ciudad(origen)
                     ciudad_destino = self.red_transporte.get_ciudad(destino)
 
                     if not ciudad_origen:
-                        print(f"Error: Ciudad de origen '{origen}' no encontrada. Fila ignorada: {row}")
+                        print(f"Nota: Ciudad de origen '{origen}' no encontrada en la primera pasada. Se intentará cargar nuevamente.")
                         continue
                     if not ciudad_destino:
-                        print(f"Error: Ciudad de destino '{destino}' no encontrada. Fila ignorada: {row}")
+                        print(f"Nota: Ciudad de destino '{destino}' no encontrada en la primera pasada. Se intentará cargar nuevamente.")
                         continue
 
                     # Crear la solicitud con los datos
@@ -54,15 +54,3 @@ class CargadorDeDatos:
             print(f"Error: No se encontró el archivo {archivo_solicitudes}")
         except Exception as e:
             print(f"Error al cargar solicitudes: {str(e)}")
-
-# Uso de la clase CargadorDeDatos
-# Suponiendo que tienes la clase RedTransporte ya definida
-
-# 1. Crear la instancia de RedTransporte
-red_transporte = RedTransporte()
-
-# 2. Crear el cargador de datos
-cargador = CargadorDeDatos(red_transporte)
-
-# 3. Cargar las solicitudes desde el archivo CSV
-cargador.cargar_solicitudes('TP/solicitudes.csv')  # Ajusta la ruta del archivo según sea necesario

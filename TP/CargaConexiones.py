@@ -9,47 +9,84 @@ class CargadorDeConexiones:
     def __init__(self, red_transporte):
         """
         Constructor que recibe una instancia de la clase RedTransporte para agregar las conexiones.
+        
+        Args:
+            red_transporte (RedTransporte): Instancia de la red de transporte
         """
         self.red_transporte = red_transporte
 
     def cargar_conexiones(self, archivo_conexiones):
-        """Carga las conexiones desde un archivo CSV y las agrega a la red de transporte."""
-        with open(archivo_conexiones, mode='r') as file:
-            reader = csv.reader(file)
-            next(reader)  # Saltar la primera fila (cabecera del archivo)
-            for row in reader:
-                if len(row) < 5:  # Verificar que la fila tiene al menos 5 elementos
-                    print(f"Fila ignorada debido a formato incorrecto: {row}")
-                    continue  # Si la fila no tiene suficientes columnas, se ignora
+        """
+        Carga las conexiones desde un archivo CSV y las agrega a la red de transporte.
+        
+        Args:
+            archivo_conexiones (str): Ruta al archivo CSV de conexiones
+            
+        El archivo CSV debe tener el siguiente formato:
+        origen,destino,tipo,distancia_km,restriccion,valor_restriccion
+        
+        Tipos de transporte válidos:
+        - Ferroviaria
+        - Automotor
+        - Fluvial
+        - Aerea
+        
+        Tipos de restricción válidos:
+        - velocidad_max: velocidad máxima en km/h
+        - peso_max: peso máximo en kg
+        - tipo: tipo de conexión (fluvial/maritimo)
+        - prob_mal_tiempo: probabilidad de mal tiempo (0.0 a 1.0)
+        """
+        try:
+            with open(archivo_conexiones, mode='r') as file:
+                reader = csv.reader(file)
+                next(reader)  # Saltar la primera fila (cabecera del archivo)
+                
+                for row in reader:
+                    if len(row) < 4:  # Verificar que la fila tiene al menos 4 elementos
+                        print(f"Fila ignorada debido a formato incorrecto: {row}")
+                        continue
 
-                ciudad1_nombre = row[0]  # `origen`
-                ciudad2_nombre = row[1]  # `destino`
-                tipo_transporte = row[2]  # `tipo`
-                try:
-                    distancia = int(row[3])  # `distancia_km`
-                except ValueError:
-                    print(f"Error en la fila {row}: La distancia debe ser un número, pero se encontró '{row[3]}'")
-                    continue  # Si hay error en la distancia, saltamos esta fila
-                tipo_restriccion = row[4] if row[4] else None  # `restriccion`
-                restriccion = row[5] if row[5] else None  # `valor_restriccion`
+                    origen = row[0].strip()
+                    destino = row[1].strip()
+                    tipo = row[2].strip()
+                    
+                    try:
+                        distancia = int(row[3])
+                    except ValueError:
+                        print(f"Error: La distancia debe ser un número entero. Fila ignorada: {row}")
+                        continue
 
-                # Obtener las ciudades de la red de transporte
-                ciudad1 = self.red_transporte.get_ciudad(ciudad1_nombre)
-                ciudad2 = self.red_transporte.get_ciudad(ciudad2_nombre)
+                    # Obtener las ciudades de la red de transporte
+                    ciudad_origen = self.red_transporte.get_ciudad(origen)
+                    ciudad_destino = self.red_transporte.get_ciudad(destino)
 
-                if ciudad1 and ciudad2:
-                    # Crear la conexión con los datos
-                    conexion = Conexion(ciudad1, ciudad2, distancia, tipo_transporte, tipo_restriccion, restriccion)
-                    self.red_transporte.agregar_conexion(conexion)  # Agregar la conexión a la red
+                    if not ciudad_origen:
+                        print(f"Error: Ciudad de origen '{origen}' no encontrada. Fila ignorada: {row}")
+                        continue
+                    if not ciudad_destino:
+                        print(f"Error: Ciudad de destino '{destino}' no encontrada. Fila ignorada: {row}")
+                        continue
 
-# Uso de la clase CargadorDeConexiones
-# Suponiendo que tienes la clase RedTransporte ya definida
+                    # Procesar restricciones si existen
+                    tipo_restriccion = row[4].strip() if len(row) > 4 and row[4] else None
+                    valor_restriccion = row[5].strip() if len(row) > 5 and row[5] else None
 
-# 1. Crear la instancia de RedTransporte
-red_transporte = RedTransporte()
+                    # Crear la conexión
+                    conexion = Conexion(
+                        ciudad_origen,
+                        ciudad_destino,
+                        distancia,
+                        tipo,
+                        tipo_restriccion,
+                        valor_restriccion
+                    )
+                    
+                    # Agregar la conexión a la red
+                    self.red_transporte.agregar_conexion(conexion)
 
-# 2. Crear el cargador de datos para conexiones
-cargador_conexiones = CargadorDeConexiones(red_transporte)
-
-# 3. Cargar las conexiones desde el archivo CSV
-cargador_conexiones.cargar_conexiones('TP/conexiones.csv')  # Ajusta la ruta del archivo según sea necesario
+        except FileNotFoundError:
+            print(f"Error: No se encontró el archivo {archivo_conexiones}")
+        except Exception as e:
+            print(f"Error al cargar conexiones: {str(e)}")
+            

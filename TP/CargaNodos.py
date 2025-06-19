@@ -9,33 +9,55 @@ class CargadorDeNodos:
     def __init__(self, red_transporte):
         """
         Constructor que recibe una instancia de la clase RedTransporte para agregar las ciudades.
+        
+        Args:
+            red_transporte (RedTransporte): Instancia de la red de transporte
         """
         self.red_transporte = red_transporte
 
     def cargar_nodos(self, archivo_nodos):
-        """Carga los nodos (ciudades) desde un archivo CSV y los agrega a la red de transporte."""
-        with open(archivo_nodos, mode='r') as file:
-            reader = csv.reader(file)
-            next(reader)  # Saltar la primera fila (cabecera del archivo)
-            for row in reader:
-                if len(row) < 1:  # Verificar que la fila tiene al menos 1 elemento
-                    print(f"Fila ignorada debido a formato incorrecto: {row}")
-                    continue  # Si la fila no tiene suficientes columnas, se ignora
-
-                ciudad_nombre = row[0]  # `ciudad`
+        """
+        Carga los nodos (ciudades) desde un archivo CSV y los agrega a la red de transporte.
+        
+        Args:
+            archivo_nodos (str): Ruta al archivo CSV de nodos
+            
+        El archivo CSV debe tener el siguiente formato:
+        nombre
+        Ciudad1
+        Ciudad2
+        ...
+        """
+        try:
+            with open(archivo_nodos, mode='r') as file:
+                reader = csv.reader(file)
+                next(reader)  # Saltar la primera fila (cabecera del archivo)
                 
-                # Crear la ciudad y agregarla a la red
-                ciudad = Ciudad(ciudad_nombre)
-                self.red_transporte.agregar_ciudad(ciudad)  # Agregar la ciudad a la red
+                ciudades_cargadas = 0
+                for row in reader:
+                    if len(row) < 1:  # Verificar que la fila tiene al menos 1 elemento
+                        print(f"Fila ignorada debido a formato incorrecto: {row}")
+                        continue
 
-# Uso de la clase CargadorDeNodos
-# Suponiendo que tienes la clase RedTransporte ya definida
-
-# 1. Crear la instancia de RedTransporte
-red_transporte = RedTransporte()
-
-# 2. Crear el cargador de datos para nodos
-cargador_nodos = CargadorDeNodos(red_transporte)
-
-# 3. Cargar los nodos desde el archivo CSV
-cargador_nodos.cargar_nodos('TP/nodos.csv')  # Ajusta la
+                    ciudad_nombre = row[0].strip()  # Eliminar espacios en blanco
+                    if not ciudad_nombre:  # Verificar que el nombre no esté vacío
+                        print(f"Fila ignorada: nombre de ciudad vacío")
+                        continue
+                    
+                    # Verificar si la ciudad ya existe
+                    if self.red_transporte.get_ciudad(ciudad_nombre):
+                        print(f"Advertencia: La ciudad '{ciudad_nombre}' ya existe. Ignorando duplicado.")
+                        continue
+                    
+                    # Crear la ciudad y agregarla a la red
+                    ciudad = Ciudad(ciudad_nombre)
+                    self.red_transporte.agregar_ciudad(ciudad)
+                    ciudades_cargadas += 1
+                
+                if ciudades_cargadas == 0:
+                    raise Exception("No se pudo cargar ninguna ciudad. Verifique el archivo nodos.csv")
+                    
+        except FileNotFoundError:
+            raise Exception(f"No se encontró el archivo {archivo_nodos}")
+        except Exception as e:
+            raise Exception(f"Error al cargar nodos: {str(e)}")
