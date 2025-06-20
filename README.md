@@ -13,7 +13,7 @@ El código se organiza en módulos separados según su responsabilidad:
 - RedTransporte.py: Clase central que gestiona nodos, conexiones y solicitudes.
 - Ciudad.py: Define los nodos (ciudades).
 - Conexiones.py: Representa las rutas entre ciudades, incluyendo restricciones.
-- Vehiculos.py: Contiene las subclases `Aereo`, `Ferroviario`, `Automotor` y `Maritimo`, con sus atributos y lógica de cálculo según restricciones.
+- Vehiculos.py: Contiene las subclases "Aereo", "Ferroviario", "Automotor" y "Maritimo", con sus atributos y lógica de cálculo según restricciones.
 - Solicitud.py: Estructura las solicitudes de envío.
 - CargaNodos.py, CargaConexiones.py, CargaSolicitudes.py: Módulos para leer los archivos CSV.
 - mostrar_mejores_caminos.py: Muestra los itinerarios óptimos para cada solicitud.
