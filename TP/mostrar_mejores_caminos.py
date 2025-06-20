@@ -1,3 +1,5 @@
+from graficos import mostrar_graficos_itinerario
+
 #hacemos una funcion para por cada solicitud que muestre los mejores caminos posib
 
 def mostrar_mejores_caminos(red_transporte, vehiculos):
@@ -20,6 +22,11 @@ def mostrar_mejores_caminos(red_transporte, vehiculos):
             print(f"  • Itinerario: {mas_rapido['itinerario']}")
             # print(f"  • Costo total: ${mas_rapido['costo_total']:,.0f}") Esto lo usabamos para testear pero no es necesario
             print(f"  • Tiempo total: {horas}:{minutos:02d}:{segundos:02d}")
+            
+            # Generar gráficos para el camino más rápido
+            if 'tramos' in mas_rapido:
+                print(f"\nGenerando gráficos para el camino más rápido...")
+                mostrar_graficos_itinerario(mas_rapido['tramos'])
         else:
             print("No hay camino más rápido disponible.")
             
@@ -40,5 +47,10 @@ def mostrar_mejores_caminos(red_transporte, vehiculos):
             print(f"  • Itinerario: {mas_barato['itinerario']}")
             print(f"  • Costo total: ${mas_barato['costo_total']:,.0f}")
             # print(f"  • Tiempo total: {horas}:{minutos:02d}:{segundos:02d}") Analogo al de arriba
+            
+            # Generar gráficos para el camino más barato
+            if 'tramos' in mas_barato:
+                print(f"\nGenerando gráficos para el camino más barato...")
+                mostrar_graficos_itinerario(mas_barato['tramos'])
         else:
             print("No hay camino más barato disponible.")

@@ -39,11 +39,11 @@ class RedTransporte:
 
     def get_conexiones_por_tipo(self, tipo_transporte):
         """ Devuelve todas las conexiones de un tipo específico de transporte """
-        return list(filter(lambda c: c.tipo_transporte.lower() == tipo_transporte.lower(), self.conexiones))
+        return [c for c in self.conexiones if c.tipo_transporte.lower() == tipo_transporte.lower()]
 
     def filtrar_conexiones_validas(self, vehiculo):
         """ Filtra las conexiones válidas según el tipo de vehículo y las restricciones """
-        return list(filter(lambda conexion: conexion.es_valida_para_vehiculo(vehiculo), self.conexiones))
+        return [conexion for conexion in self.conexiones if conexion.es_valida_para_vehiculo(vehiculo)]
 
     def encontrar_caminos_posibles(self, origen, destino, vehiculo):
         """
@@ -126,6 +126,63 @@ class RedTransporte:
             ciudad_actual = siguiente
             
         return itinerario
+
+    def _construir_tramos(self, camino, vehiculo, solicitud):
+        """
+        Construye la lista de tramos con la información necesaria para los gráficos.
+        
+        Args:
+            camino: Lista de conexiones
+            vehiculo: Vehículo que realizará el viaje
+            solicitud: Solicitud de transporte
+            
+        Returns:
+            list: Lista de diccionarios con información de cada tramo
+        """
+        tramos = []
+        cant_vehiculos = (solicitud.peso + vehiculo.capacidad - 1) // vehiculo.capacidad
+        
+        for conexion in camino:
+            # Determinar origen y destino del tramo
+            if hasattr(conexion, 'ciudad1') and hasattr(conexion, 'ciudad2'):
+                origen = conexion.ciudad1.nombre
+                destino = conexion.ciudad2.nombre
+            else:
+                # Fallback si la conexión no tiene las ciudades definidas
+                continue
+            
+            # Calcular costo del tramo
+            costo_fijo = float(vehiculo.costo_fijo) if vehiculo.costo_fijo is not None else 0
+            if hasattr(vehiculo, 'calcular_costo_fijo') and vehiculo.costo_fijo is None:
+                costo_fijo = float(vehiculo.calcular_costo_fijo(getattr(conexion, 'restriccion', None)))
+            
+            costo_km = float(vehiculo.costo_km) if vehiculo.costo_km is not None else 0
+            if hasattr(vehiculo, 'calcular_costo_por_km') and vehiculo.costo_km is None:
+                costo_km = float(vehiculo.calcular_costo_por_km(conexion.distancia))
+            
+            # Costo del tramo: (costo_fijo + costo_km * distancia) * cant_vehiculos
+            costo_tramo = (costo_fijo + costo_km * conexion.distancia) * cant_vehiculos
+            
+            # Calcular tiempo del tramo
+            velocidad = float(vehiculo.velocidad)
+            if hasattr(vehiculo, 'calcular_velocidad'):
+                if hasattr(conexion, 'tipo_restriccion') and conexion.tipo_restriccion == 'prob_mal_tiempo':
+                    velocidad = float(vehiculo.calcular_velocidad(float(conexion.restriccion)))
+                else:
+                    velocidad = float(vehiculo.calcular_velocidad())
+            
+            tiempo_tramo = conexion.distancia / velocidad if velocidad > 0 else float('inf')
+            tiempo_tramo_minutos = round(tiempo_tramo * 60)  # Convertir a minutos
+            
+            tramos.append({
+                'origen': origen,
+                'destino': destino,
+                'distancia': conexion.distancia,
+                'tiempo': tiempo_tramo_minutos,
+                'costo': costo_tramo
+            })
+        
+        return tramos
 
     def mejores_caminos_para_solicitud(self, solicitud, vehiculos):
         """
@@ -217,6 +274,9 @@ class RedTransporte:
                 # Crear un itinerario legible
                 itinerario_str = " - ".join(itinerario)
                 
+                # Construir tramos para los gráficos
+                tramos = self._construir_tramos(camino, vehiculo, solicitud)
+                
                 # Agregar este resultado a la lista de todos los resultados
                 todos_resultados.append({
                     'camino': camino,
@@ -226,7 +286,8 @@ class RedTransporte:
                     'costo_total': costo_total,
                     'tiempo_total': tiempo_total,
                     'tiempo_total_minutos': tiempo_total_minutos,
-                    'cant_vehiculos': cant_vehiculos
+                    'cant_vehiculos': cant_vehiculos,
+                    'tramos': tramos
                 })
         
         # Si no hay resultados, retornar None para ambos

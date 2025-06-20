@@ -6,7 +6,8 @@ from Ciudad import Ciudad
 from Vehiculos import Aereo, Ferroviario, Maritimo, Automotor
 from Conexiones import Conexion
 from mostrar_mejores_caminos import mostrar_mejores_caminos
-#from graficos import graficar_conexiones_por_tipo
+from graficos import mostrar_graficos_itinerario
+
 
 def inicializar_red_transporte():
     """
