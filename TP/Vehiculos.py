@@ -1,4 +1,6 @@
 class Vehiculo:
+    tipos_validos = {'ferroviaria', 'automotor', 'fluvial', 'aerea'}
+
     def __init__(self, nombre, velocidad, capacidad, costo_fijo, costo_km, costo_kg):
         self.nombre = nombre
         self.velocidad = velocidad        # km/h
