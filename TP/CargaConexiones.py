@@ -25,12 +25,8 @@ class CargadorDeConexiones:
                     origen = row[0].strip()
                     destino = row[1].strip()
                     tipo = row[2].strip()
-                    
-                    try:
-                        distancia = int(row[3])
-                    except ValueError:
-                        print(f"Error: La distancia debe ser un número entero. Fila ignorada: {row}")
-                        continue
+                    distancia = row[3].strip()
+
 
                     # Obtener las ciudades de la red de transporte
                     ciudad_origen = self.red_transporte.get_ciudad(origen)
