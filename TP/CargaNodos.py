@@ -7,27 +7,11 @@ import csv
 
 class CargadorDeNodos:
     def __init__(self, red_transporte):
-        """
-        Constructor que recibe una instancia de la clase RedTransporte para agregar las ciudades.
-        
-        Args:
-            red_transporte (RedTransporte): Instancia de la red de transporte
-        """
+
         self.red_transporte = red_transporte
 
     def cargar_nodos(self, archivo_nodos):
-        """
-        Carga los nodos (ciudades) desde un archivo CSV y los agrega a la red de transporte.
-        
-        Args:
-            archivo_nodos (str): Ruta al archivo CSV de nodos
-            
-        El archivo CSV debe tener el siguiente formato:
-        nombre
-        Ciudad1
-        Ciudad2
-        ...
-        """
+
         try:
             with open(archivo_nodos, mode='r') as file:
                 reader = csv.reader(file)
@@ -61,3 +45,4 @@ class CargadorDeNodos:
             raise Exception(f"No se encontró el archivo {archivo_nodos}")
         except Exception as e:
             raise Exception(f"Error al cargar nodos: {str(e)}")
+    

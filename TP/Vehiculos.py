@@ -22,20 +22,7 @@ class Automotor(Vehiculo):
         super().__init__("Automotor", 80, 30000, 30, 5, None)
 
     def calcular_costo_por_kg(self, peso_total):
-        """
-        Calcula el costo por kg dinámicamente según el peso total de la carga.
-        
-        Lógica:
-        - Cada vehículo tiene capacidad de 30000 kg
-        - Los primeros vehículos completos (30000 kg) se cobran a $2.00/kg
-        - El último vehículo parcial se cobra a $1.00/kg
-        
-        Args:
-            peso_total: Peso total de la carga en kg
-            
-        Returns:
-            float: Costo promedio ponderado por kg
-        """
+
         if peso_total <= 0:
             return 0
             

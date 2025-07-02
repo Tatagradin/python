@@ -46,17 +46,7 @@ class RedTransporte:
         return list(filter(lambda conexion: conexion.es_valida_para_vehiculo(vehiculo), self.conexiones))
 
     def encontrar_caminos_posibles(self, origen, destino, vehiculo):
-        """
-        Encuentra todos los caminos posibles entre dos ciudades usando DFS.
-        
-        Args:
-            origen (str): Nombre de la ciudad de origen
-            destino (str): Nombre de la ciudad de destino
-            vehiculo: Vehículo que realizará el viaje
-            
-        Returns:
-            list: Lista de caminos posibles, donde cada camino es una lista de conexiones
-        """
+    
         def dfs(ciudad_actual, ciudad_destino, camino_actual, caminos_encontrados, visitadas):
             if ciudad_actual == ciudad_destino:
                 caminos_encontrados.append(camino_actual[:])
@@ -97,16 +87,7 @@ class RedTransporte:
         }
 
     def _construir_itinerario(self, camino, origen):
-        """
-        Construye un itinerario ordenado a partir de un camino.
-        
-        Args:
-            camino: Lista de conexiones
-            origen: Nombre de la ciudad de origen
-            
-        Returns:
-            list: Lista ordenada de nombres de ciudades
-        """
+
         if not camino:
             return []
             
@@ -128,17 +109,7 @@ class RedTransporte:
         return itinerario
 
     def _construir_tramos(self, camino, vehiculo, solicitud):
-        """
-        Construye la lista de tramos con la información necesaria para los gráficos.
-        
-        Args:
-            camino: Lista de conexiones
-            vehiculo: Vehículo que realizará el viaje
-            solicitud: Solicitud de transporte
-            
-        Returns:
-            list: Lista de diccionarios con información de cada tramo
-        """
+
         tramos = []
         cant_vehiculos = (solicitud.peso + vehiculo.capacidad - 1) // vehiculo.capacidad
         
@@ -185,16 +156,7 @@ class RedTransporte:
         return tramos
 
     def mejores_caminos_para_solicitud(self, solicitud, vehiculos):
-        """
-        Encuentra los mejores caminos (más barato y más rápido) para una solicitud dada.
-        
-        Args:
-            solicitud: Solicitud de transporte
-            vehiculos: Diccionario de vehículos disponibles
-            
-        Returns:
-            dict: Diccionario con los mejores caminos (más barato y más rápido)
-        """
+
         # Listas para almacenar todos los resultados
         todos_resultados = []
         

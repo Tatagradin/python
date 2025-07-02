@@ -7,36 +7,11 @@ import csv
 
 class CargadorDeConexiones:
     def __init__(self, red_transporte):
-        """
-        Constructor que recibe una instancia de la clase RedTransporte para agregar las conexiones.
-        
-        Args:
-            red_transporte (RedTransporte): Instancia de la red de transporte
-        """
+
         self.red_transporte = red_transporte
 
     def cargar_conexiones(self, archivo_conexiones):
-        """
-        Carga las conexiones desde un archivo CSV y las agrega a la red de transporte.
-        
-        Args:
-            archivo_conexiones (str): Ruta al archivo CSV de conexiones
-            
-        El archivo CSV debe tener el siguiente formato:
-        origen,destino,tipo,distancia_km,restriccion,valor_restriccion
-        
-        Tipos de transporte válidos:
-        - Ferroviaria
-        - Automotor
-        - Fluvial
-        - Aerea
-        
-        Tipos de restricción válidos:
-        - velocidad_max: velocidad máxima en km/h
-        - peso_max: peso máximo en kg
-        - tipo: tipo de conexión (fluvial/maritimo)
-        - prob_mal_tiempo: probabilidad de mal tiempo (0.0 a 1.0)
-        """
+
         try:
             with open(archivo_conexiones, mode='r') as file:
                 reader = csv.reader(file)

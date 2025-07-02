@@ -8,9 +8,6 @@ import csv
 
 class CargadorDeDatos:
     def __init__(self, red_transporte):
-        """
-        Constructor que recibe una instancia de la clase RedTransporte para agregar las solicitudes.
-        """
         self.red_transporte = red_transporte
 
     def cargar_solicitudes(self, archivo_solicitudes):

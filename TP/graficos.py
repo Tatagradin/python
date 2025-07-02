@@ -1,13 +1,7 @@
 import matplotlib.pyplot as plt
 
 def graficar_distancia_tiempo(tramos):
-    """
-    Genera un gráfico de Distancia Acumulada vs. Tiempo Acumulado para un itinerario.
-    
-    Args:
-        tramos: Lista de diccionarios con información de cada tramo del itinerario.
-               Cada diccionario debe contener: 'origen', 'destino', 'distancia', 'tiempo'
-    """
+
     tiempo_acum = [0]  # Iniciamos en 0
     distancia_acum = [0]  # Iniciamos en 0
     etiquetas = []
@@ -34,13 +28,7 @@ def graficar_distancia_tiempo(tramos):
     plt.tight_layout()
     
 def graficar_costo_distancia(tramos):
-    """
-    Genera un gráfico de Costo Acumulado vs. Distancia Acumulada para un itinerario.
-    
-    Args:
-        tramos: Lista de diccionarios con información de cada tramo del itinerario.
-               Cada diccionario debe contener: 'origen', 'destino', 'distancia', 'costo'
-    """
+
     distancia_acum = [0]  # Iniciamos en 0
     costo_acum = [0]  # Iniciamos en 0
     etiquetas = []
@@ -67,12 +55,7 @@ def graficar_costo_distancia(tramos):
     plt.tight_layout()
 
 def mostrar_graficos_itinerario(tramos):
-    """
-    Genera y muestra ambos gráficos para un itinerario dado.
-    
-    Args:
-        tramos: Lista de diccionarios con la información de cada tramo.
-    """
+
     graficar_distancia_tiempo(tramos)
     graficar_costo_distancia(tramos)
     plt.show()  # Muestra ambos gráficos
