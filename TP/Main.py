@@ -92,7 +92,7 @@ def main():
         print(f"Total de conexiones: {stats['total_conexiones']}")
         print(f"Total de solicitudes: {stats['total_solicitudes']}")
         print("\nConexiones por tipo:")
-        #graficar_conexiones_por_tipo(stats)
+   
         for tipo, cantidad in stats['conexiones_por_tipo'].items():
             print(f"- {tipo}: {cantidad}")
         

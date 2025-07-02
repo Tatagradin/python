@@ -2,7 +2,7 @@
 class Vehiculo:
     tipos_validos = {'ferroviaria', 'automotor', 'fluvial', 'aerea'}
 
-    def _init_(self, nombre, velocidad, capacidad, costo_fijo, costo_km, costo_kg):
+    def __init__(self, nombre, velocidad, capacidad, costo_fijo, costo_km, costo_kg):
         self.nombre = nombre
         self.velocidad = velocidad        # km/h
         self.capacidad = capacidad        # kg
@@ -24,8 +24,8 @@ class Vehiculo:
 
 
 class Ferroviario(Vehiculo):
-    def _init_(self):
-        super()._init_("ferroviaria", 100, 150000, 100, None, 3)
+    def __init__(self):
+        super().__init__("ferroviaria", 100, 150000, 100, None, 3)
 
     def calcular_costo_por_km(self, distancia):
         # Según la tabla: $20 para distancias < 200km, $15 para >= 200km
@@ -37,8 +37,8 @@ class Ferroviario(Vehiculo):
 
 
 class Automotor(Vehiculo):
-    def _init_(self):
-        super()._init_("automotor", 80, 30000, 30, 5, None)
+    def __init__(self):
+        super().__init__("automotor", 80, 30000, 30, 5, None)
 
     def calcular_costo_por_kg(self, peso_total):
         if peso_total <= 0:
@@ -67,8 +67,8 @@ class Automotor(Vehiculo):
 
 
 class Maritimo(Vehiculo):
-    def _init_(self):
-        super()._init_("fluvial", 40, 100000, None, 15, 2.0)
+    def __init__(self):
+        super().__init__("fluvial", 40, 100000, None, 15, 2.0)
 
     def calcular_costo_fijo(self, tipo):
         # Según la tabla: $500 para fluvial, $1500 para marítimo
@@ -83,8 +83,8 @@ class Maritimo(Vehiculo):
 
 
 class Aereo(Vehiculo):
-    def _init_(self):
-        super()._init_("aerea", 600, 5000, 750, 40, 10)
+    def __init__(self):
+        super().__init__("aerea", 600, 5000, 750, 40, 10)
 
     def calcular_velocidad(self, prob_mal_tiempo=None):
         if prob_mal_tiempo is not None and prob_mal_tiempo > 0:

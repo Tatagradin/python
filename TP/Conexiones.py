@@ -3,7 +3,7 @@ import Vehiculos
 from Ciudad import Ciudad
 class Conexion:
 
-    def _init_(self, ciudad1: Ciudad, ciudad2: Ciudad, distancia: int,
+    def __init__(self, ciudad1: Ciudad, ciudad2: Ciudad, distancia: int,
                  tipo_transporte: str, tipo_restriccion: str = '', restriccion = None):
         self.ciudad1 = ciudad1
         self.ciudad2 = ciudad2
