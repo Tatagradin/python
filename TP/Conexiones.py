@@ -1,4 +1,3 @@
-
 import Vehiculos
 from Ciudad import Ciudad
 class Conexion:
@@ -55,3 +54,25 @@ class Conexion:
                 return False
             return float(self.restriccion) <= 0.3
         return True
+
+    def get_ciudad1(self):
+        return self.ciudad1
+
+    def get_ciudad2(self):
+        return self.ciudad2
+
+    def get_nombre_ciudad1(self):
+        return self.ciudad1.nombre
+
+    def get_nombre_ciudad2(self):
+        return self.ciudad2.nombre
+
+    def get_ciudad_opuesta(self, nombre_ciudad):
+        if self.ciudad1.nombre == nombre_ciudad:
+            return self.ciudad2
+        elif self.ciudad2.nombre == nombre_ciudad:
+            return self.ciudad1
+        return None
+
+    def get_nombres_ciudades(self):
+        return (self.ciudad1.nombre, self.ciudad2.nombre)
