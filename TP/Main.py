@@ -47,11 +47,11 @@ def probar_conexiones_desde_ciudad(red_transporte, nombre_ciudad, tipo_vehiculo)
         return
         
     print(f"\nConexiones desde {nombre_ciudad} para {tipo_vehiculo}:")
-    conexiones = [c for c in ciudad.posibles_conexiones if c.tipo_transporte.lower() == tipo_vehiculo.lower()]
+    conexiones = list(filter(lambda c: c.tipo_transporte.lower() == tipo_vehiculo.lower(), ciudad.posibles_conexiones))
     
     if conexiones:
         for conexion in conexiones:
-            ciudad_destino = conexion.ciudad2.nombre if conexion.ciudad1.nombre == nombre_ciudad else conexion.ciudad1.nombre
+            ciudad_destino = conexion.get_ciudad2().get_nombre() if conexion.get_ciudad1().get_nombre() == nombre_ciudad else conexion.get_ciudad1().get_nombre()
             print(f"→ {ciudad_destino} - Distancia: {conexion.distancia} km")
     else:
         print(f"No se encontraron conexiones de tipo {tipo_vehiculo} desde {nombre_ciudad}")
@@ -64,7 +64,7 @@ def probar_caminos_posibles(red_transporte, origen, destino, vehiculo):
         for i, camino in enumerate(caminos, 1):
             print(f"\nCamino {i}:")
             for conexion in camino:
-                print(f"  {conexion.ciudad1.nombre} -> {conexion.ciudad2.nombre} ({conexion.tipo_transporte})")
+                print(f"  {conexion.get_nombre_ciudad1()} -> {conexion.get_nombre_ciudad2()} ({conexion.tipo_transporte})")
     else:
         print(f"No se encontraron caminos posibles de {origen} a {destino}")
 

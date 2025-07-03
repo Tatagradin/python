@@ -11,7 +11,7 @@ class RedTransporte:
 
     def agregar_ciudad(self, ciudad):
         """ Agrega una ciudad al diccionario de ciudades usando el nombre como clave """
-        self.ciudades[ciudad.nombre] = ciudad
+        self.ciudades[ciudad.get_nombre()] = ciudad
 
     def agregar_conexion(self, conexion):
         """ Agrega una conexión a la red de transporte y la registra en ambas ciudades involucradas """
@@ -54,7 +54,7 @@ class RedTransporte:
                 return
 
             for conexion in filter(lambda c: c.es_valida_para_vehiculo(vehiculo), ciudad_obj.posibles_conexiones):
-                siguiente_ciudad = conexion.get_ciudad_opuesta(ciudad_actual).nombre
+                siguiente_ciudad = conexion.get_ciudad_opuesta(ciudad_actual).get_nombre()
                 if siguiente_ciudad not in visitadas:
                     visitadas.add(siguiente_ciudad)
                     camino_actual.append(conexion)
@@ -92,7 +92,7 @@ class RedTransporte:
         # Para cada conexión, determinar la siguiente ciudad
         for conexion in camino:
             # Determinar cuál es la siguiente ciudad
-            siguiente = conexion.get_ciudad_opuesta(ciudad_actual).nombre
+            siguiente = conexion.get_ciudad_opuesta(ciudad_actual).get_nombre()
             itinerario.append(siguiente)
             ciudad_actual = siguiente
             
@@ -141,8 +141,8 @@ class RedTransporte:
         todos_resultados = []
         for tipo_vehiculo, vehiculo in vehiculos.items():
             caminos = self.encontrar_caminos_posibles(
-                solicitud.ciudad_origen.nombre, 
-                solicitud.ciudad_destino.nombre, 
+                solicitud.ciudad_origen.get_nombre(), 
+                solicitud.ciudad_destino.get_nombre(), 
                 vehiculo
             )
             if not caminos:
@@ -156,7 +156,7 @@ class RedTransporte:
                 costo_vehiculo = costo_por_kilo * solicitud.peso
                 costo_total_tramos = 0
                 tiempo_total = 0
-                itinerario = self._construir_itinerario(camino, solicitud.ciudad_origen.nombre)
+                itinerario = self._construir_itinerario(camino, solicitud.ciudad_origen.get_nombre())
                 for conexion in camino:
                     costo_fijo = self._calcular_costo_fijo(vehiculo, conexion)
                     costo_km = self._calcular_costo_km(vehiculo, conexion)
@@ -172,7 +172,7 @@ class RedTransporte:
                 todos_resultados.append({
                     'camino': camino,
                     'tipo_vehiculo': tipo_vehiculo,
-                    'modo': vehiculo.nombre,
+                    'modo': vehiculo.get_nombre(),
                     'itinerario': itinerario_str,
                     'costo_total': costo_total,
                     'tiempo_total': tiempo_total,

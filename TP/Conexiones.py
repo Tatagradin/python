@@ -62,17 +62,17 @@ class Conexion:
         return self.ciudad2
 
     def get_nombre_ciudad1(self):
-        return self.ciudad1.nombre
+        return self.ciudad1.get_nombre()
 
     def get_nombre_ciudad2(self):
-        return self.ciudad2.nombre
+        return self.ciudad2.get_nombre()
 
     def get_ciudad_opuesta(self, nombre_ciudad):
-        if self.ciudad1.nombre == nombre_ciudad:
+        if self.ciudad1.get_nombre() == nombre_ciudad:
             return self.ciudad2
-        elif self.ciudad2.nombre == nombre_ciudad:
+        elif self.ciudad2.get_nombre() == nombre_ciudad:
             return self.ciudad1
         return None
 
     def get_nombres_ciudades(self):
-        return (self.ciudad1.nombre, self.ciudad2.nombre)
+        return (self.ciudad1.get_nombre(), self.ciudad2.get_nombre())

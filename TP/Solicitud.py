@@ -10,4 +10,4 @@ class Solicitud:
 
     def __str__(self):
         """Devuelve una representación en string de la solicitud"""
-        return f"Solicitud {self.id_solicitud}: {self.peso}kg de {self.ciudad_origen.nombre} a {self.ciudad_destino.nombre}" 
+        return f"Solicitud {self.id_solicitud}: {self.peso}kg de {self.ciudad_origen.get_nombre()} a {self.ciudad_destino.get_nombre()}" 
