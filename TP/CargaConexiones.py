@@ -43,19 +43,21 @@ class CargadorDeConexiones:
                     tipo_restriccion = row[4].strip() if len(row) > 4 and row[4] else None
                     valor_restriccion = row[5].strip() if len(row) > 5 and row[5] else None
 
-                    # Crear la conexión
-                    conexion = Conexion(
-                        ciudad_origen,
-                        ciudad_destino,
-                        distancia,
-                        tipo,
-                        tipo_restriccion,
-                        valor_restriccion
-                    )
-                    
-                    # Agregar la conexión a la red
-                    self.red_transporte.agregar_conexion(conexion)
-
+                    try:
+                        conexion = Conexion(
+                            ciudad_origen,
+                            ciudad_destino,
+                            distancia,
+                            tipo,
+                            tipo_restriccion,
+                            valor_restriccion
+                        )
+                        self.red_transporte.agregar_conexion(conexion)
+                    except ValueError as e:
+                        print(f"Error al crear conexión entre {origen} y {destino}: {e}")
+            
+            if len(self.red_transporte.conexiones) == 0:
+                raise Exception("No se pudo cargar ninguna conexión. Verifique el archivo conexiones.csv")
         except FileNotFoundError:
             print(f"Error: No se encontró el archivo {archivo_conexiones}")
         except Exception as e:

@@ -1,23 +1,19 @@
 import Vehiculos
 from Ciudad import Ciudad
+
 class Conexion:
 
-    def __init__(self, ciudad1: Ciudad, ciudad2: Ciudad, distancia: int,
-                 tipo_transporte: str, tipo_restriccion: str = '', restriccion = None):
+    def __init__(self, ciudad1: Ciudad, ciudad2: Ciudad, distancia, tipo_transporte: str, tipo_restriccion: str = '', restriccion=None):
+        try:
+            self.distancia = int(distancia)
+        except ValueError:
+            raise ValueError(f"La distancia ingresada no es válida: '{distancia}'")
+
         self.ciudad1 = ciudad1
         self.ciudad2 = ciudad2
-        self.distancia = Conexion.convertir_distancia(distancia)  # en kilómetros
-        self.tipo_transporte = tipo_transporte if tipo_transporte is not None else ""  # asegurar str
-        self.tipo_restriccion = tipo_restriccion  # 'velocidad_max', 'peso_max', 'tipo', 'prob_mal_tiempo'
-        self.restriccion = restriccion  # valor de la restricción
-
-    @staticmethod
-    def convertir_distancia(valor):
-        try:
-            return int(valor)
-        except (ValueError):
-            print("La distancia cargada en el archivo debe ser un número entero")
-            return None
+        self.tipo_transporte = tipo_transporte if tipo_transporte is not None else ""
+        self.tipo_restriccion = tipo_restriccion
+        self.restriccion = restriccion
 
     def es_valida_para_vehiculo(self, vehiculo: Vehiculos.Vehiculo) -> bool:
         tipo_vehiculo = vehiculo.get_tipo_transporte()
@@ -29,9 +25,8 @@ class Conexion:
         if tipo_vehiculo not in Vehiculos.Vehiculo.tipos_validos or tipo_vehiculo != tipo_conexion:
             return False
 
-        # Verificar restricciones específicas
+        # hhhhVerificar restricciones específicas
         if self.tipo_restriccion == 'velocidad_max':
-            # Ferroviario ignora velocidad_max
             if tipo_vehiculo == 'ferroviaria':
                 pass
             else:
@@ -53,6 +48,7 @@ class Conexion:
             if self.restriccion is None:
                 return False
             return float(self.restriccion) <= 0.3
+
         return True
 
     def get_ciudad1(self):
