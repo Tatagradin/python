@@ -1,6 +1,8 @@
 from Conexiones import Conexion
 from Ciudad import Ciudad
 from Vehiculos import *
+from imprevistos import conexion_esta_disponible
+
 
 
 class RedTransporte:
@@ -40,7 +42,7 @@ class RedTransporte:
 
     def filtrar_conexiones_validas(self, vehiculo):
         """ Filtra las conexiones válidas según el tipo de vehículo y las restricciones """
-        return list(filter(lambda conexion: conexion.es_valida_para_vehiculo(vehiculo), self.conexiones))
+        return list(filter(lambda conexion: conexion.es_valida_para_vehiculo(vehiculo) and conexion.esta_habilitada()))
 
     def encontrar_caminos_posibles(self, origen, destino, vehiculo):
     
@@ -53,7 +55,7 @@ class RedTransporte:
             if not ciudad_obj:
                 return
 
-            for conexion in filter(lambda c: c.es_valida_para_vehiculo(vehiculo), ciudad_obj.posibles_conexiones):
+            for conexion in filter(lambda c: conexion_esta_disponible(c, vehiculo), ciudad_obj.posibles_conexiones):
                 siguiente_ciudad = conexion.get_ciudad_opuesta(ciudad_actual).get_nombre()
                 if siguiente_ciudad not in visitadas:
                     visitadas.add(siguiente_ciudad)
