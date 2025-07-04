@@ -7,7 +7,7 @@ from Vehiculos import Aereo, Ferroviario, Maritimo, Automotor
 from Conexiones import Conexion
 from mostrar_mejores_caminos import mostrar_mejores_caminos
 from graficos import mostrar_graficos_itinerario
-
+from imprevistos import pila_imprevistos
 
 def inicializar_red_transporte():
 
@@ -105,6 +105,11 @@ def main():
         }
         mostrar_mejores_caminos(red_transporte, vehiculos)
         
+        if pila_imprevistos:
+            print("\n=== IMPREVISTOS DETECTADOS (orden LIFO) ===")
+            while pila_imprevistos:
+                evento = pila_imprevistos.pop()
+                print(f"- {evento[4]}")
         print("\n=== Programa finalizado exitosamente ===")
         
     except Exception as e:

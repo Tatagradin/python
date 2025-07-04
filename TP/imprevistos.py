@@ -1,4 +1,5 @@
 import random
+pila_imprevistos=[]
 
 probabilidades_paro = {
     "aerea": 0.3,
@@ -16,15 +17,19 @@ def conexion_esta_disponible(conexion, vehiculo):
     ciudad1 = conexion.get_nombre_ciudad1()
     ciudad2 = conexion.get_nombre_ciudad2()
 
-   
+   #paro es LIFO
     if tipo in probabilidades_paro:
         if random.random() < probabilidades_paro[tipo]:
-            print(f"  Paro detectado en el sector {tipo.upper()} — Conexión entre {ciudad1} y {ciudad2} inhabilitada.")
+            mensaje = f"  Paro detectado en el sector {tipo.upper()} — Conexión entre {ciudad1} y {ciudad2} inhabilitada."
+            pila_imprevistos.append(("paro", tipo, ciudad1, ciudad2, mensaje))
+            #print(mensaje)
             return False
-
+    #corte lifo
     if tipo in probabilidades_corte:
         if random.random() < probabilidades_corte[tipo]:
-            print(f"  Corte de ruta en transporte {tipo.upper()} — Conexión entre {ciudad1} y {ciudad2} inhabilitada.")
+            mensaje = f"  Corte de ruta en transporte {tipo.upper()} — Conexión entre {ciudad1} y {ciudad2} inhabilitada."
+            pila_imprevistos.append(("corte", tipo, ciudad1, ciudad2, mensaje))
+            #print(mensaje)
             return False
 
   
