@@ -61,10 +61,6 @@ def main():
         # 4. Obtener caminos para las solicitudes
         print("\n=== Procesando solicitudes ===")
         mostrar_mejores_caminos(red_transporte, vehiculos)
-       
-        # 5. Generar gráficos
-        print("\n=== Generando gráficos ===")
-        mostrar_graficos_itinerario(red_transporte)
 
         
         if pila_imprevistos:
