@@ -5,8 +5,8 @@ from CargaNodos import CargadorDeNodos
 from Ciudad import Ciudad
 from Vehiculos import Aereo, Ferroviario, Maritimo, Automotor
 from Conexiones import Conexion
-from mostrar_mejores_caminos import mostrar_mejores_caminos
-from graficos import mostrar_graficos_itinerario
+from mostrar_mejores_caminos import MostradorCaminos
+from graficos import Graficador
 from imprevistos import pila_imprevistos
 
 def inicializar_red_transporte():
@@ -18,7 +18,6 @@ def inicializar_red_transporte():
     print("\n1. Cargando nodos...")
     cargador_nodos = CargadorDeNodos(red_transporte)
     cargador_nodos.cargar_nodos('TP/nodos.csv')
-
 
     # 2. Cargar conexiones
     print("\n2. Cargando conexiones...")
@@ -60,9 +59,11 @@ def main():
        
         # 4. Obtener caminos para las solicitudes
         print("\n=== Procesando solicitudes ===")
-        mostrar_mejores_caminos(red_transporte, vehiculos)
+        MostradorCaminos.mostrar_mejores_caminos(red_transporte, vehiculos)
+       
+        # 5. Generar gráficos (ya se generan dentro de mostrar_mejores_caminos para cada solicitud)
+        # Graficador.mostrar_graficos_itinerario(red_transporte)  # Línea eliminada
 
-        
         if pila_imprevistos:
             print("\n=== IMPREVISTOS DETECTADOS (orden LIFO) ===")
             while pila_imprevistos:
