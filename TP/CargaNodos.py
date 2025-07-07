@@ -2,11 +2,11 @@ from Conexiones import Conexion
 from Ciudad import Ciudad
 from Vehiculos import *
 from RedTransporte import RedTransporte
-from leector_csv import leer_csv_comun
+from leector_csv import Cargador
 
 import csv
 
-class CargadorDeNodos:
+class CargadorDeNodos(Cargador):
     def __init__(self, red_transporte):
         self.red_transporte = red_transporte
 
@@ -14,7 +14,7 @@ class CargadorDeNodos:
         """Carga los nodos (ciudades) desde un archivo CSV y los agrega a la red de transporte."""
         try:
             # Usar función común para leer el archivo
-            filas = leer_csv_comun(archivo_nodos)
+            filas = CargadorDeNodos.leer_csv_comun(archivo_nodos)
             
             ciudades_cargadas = 0
             for row in filas:

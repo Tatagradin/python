@@ -3,11 +3,11 @@ from Ciudad import Ciudad
 from Vehiculos import *
 from RedTransporte import RedTransporte
 from Solicitud import Solicitud
-from leector_csv import leer_csv_comun
+from leector_csv import Cargador
 
 import csv
 
-class CargadorDeDatos:
+class CargadorDeDato(Cargador):
     def __init__(self, red_transporte):
         self.red_transporte = red_transporte
 
@@ -15,7 +15,7 @@ class CargadorDeDatos:
         """Carga las solicitudes desde un archivo CSV y las agrega a la red de transporte."""
         try:
             # Usar función común para leer el archivo
-            filas = leer_csv_comun(archivo_solicitudes)
+            filas = CargadorDeDato.leer_csv_comun(archivo_solicitudes)
             
             for row in filas:
                 if len(row) < 4:  # Verificar que la fila tiene al menos 4 elementos
