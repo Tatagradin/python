@@ -1,5 +1,6 @@
 import Vehiculos
 from Ciudad import Ciudad
+from TP.restricciones import Restricciones
 
 class Conexion:
 
@@ -13,7 +14,8 @@ class Conexion:
         self.ciudad2 = ciudad2
         self.tipo_transporte = tipo_transporte if tipo_transporte is not None else ""
         self.tipo_restriccion = tipo_restriccion
-        self.restriccion = restriccion
+        # Usar la fábrica para crear la restricción adecuada
+        self.restriccion = Restricciones.crear_restriccion_conexion(tipo_restriccion, restriccion)
 
     def es_valida_para_vehiculo(self, vehiculo: Vehiculos.Vehiculo) -> bool:
         tipo_vehiculo = vehiculo.get_tipo_transporte()
@@ -25,30 +27,8 @@ class Conexion:
         if tipo_vehiculo not in Vehiculos.Vehiculo.tipos_validos or tipo_vehiculo != tipo_conexion:
             return False
 
-        # hhhhVerificar restricciones específicas
-        if self.tipo_restriccion == 'velocidad_max':
-            if tipo_vehiculo == 'ferroviaria':
-                pass
-            else:
-                velocidad = vehiculo.get_velocidad_maxima()
-                if self.restriccion is None:
-                    return False
-                return velocidad <= float(self.restriccion)
-
-        if self.tipo_restriccion == 'peso_max':
-            capacidad = vehiculo.get_capacidad()
-            if self.restriccion is None:
-                return False
-            return capacidad <= float(self.restriccion)
-
-        if self.tipo_restriccion == 'tipo' and tipo_vehiculo == 'fluvial':
-            return self.restriccion in ['fluvial', 'maritimo']
-
-        if self.tipo_restriccion == 'prob_mal_tiempo' and tipo_vehiculo == 'aerea':
-            if self.restriccion is None:
-                return False
-            return float(self.restriccion) <= 0.3
-
+        if self.restriccion:
+            return self.restriccion.es_valida(vehiculo, self)
         return True
 
     def get_ciudad1(self):
