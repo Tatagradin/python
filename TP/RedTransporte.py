@@ -1,15 +1,17 @@
 from Conexiones import Conexion
 from Ciudad import Ciudad
 from Vehiculos import *
-from imprevistos import conexion_esta_disponible
-from Solicitud import Solicitud
 
+from Solicitud import Solicitud
+import random
 
 class RedTransporte:
+    
     def __init__(self):
         self.ciudades = {}        # Diccionario para almacenar las ciudades por nombre
         self.conexiones = []      # Lista global que guarda todas las conexiones
         self.solicitudes = []     # Lista para almacenar las solicitudes de transporte
+        self.pila_imprevistos = []  # Pila para almacenar imprevistos
 
     def agregar_ciudad(self, ciudad):
         #Agrega una ciudad al diccionario de ciudades usando el nombre como clave
@@ -60,7 +62,7 @@ class RedTransporte:
             if not ciudad_obj:
                 return
 
-            for conexion in filter(lambda c: conexion_esta_disponible(c, vehiculo), ciudad_obj.get_posibles_conexiones()):
+            for conexion in filter(lambda c: self.conexion_esta_disponible(c, vehiculo), ciudad_obj.get_posibles_conexiones()):
                 siguiente_ciudad = conexion.get_ciudad_opuesta(ciudad_actual).get_nombre()
                 if siguiente_ciudad not in visitadas:
                     visitadas.add(siguiente_ciudad)
@@ -72,6 +74,29 @@ class RedTransporte:
         caminos_encontrados = []
         dfs(origen, destino, [], caminos_encontrados, set([origen]))
         return caminos_encontrados
+
+    def conexion_esta_disponible(self, conexion, vehiculo):
+        ciudad1 = conexion.get_nombre_ciudad1()
+        ciudad2 = conexion.get_nombre_ciudad2()
+
+        # paro es LIFO
+        if vehiculo.get_probabilidad_paro() is not None:
+            if random.random() < vehiculo.get_probabilidad_paro():
+                mensaje = f"  Paro detectado en el sector {vehiculo.get_nombre().upper()} — Conexión entre {ciudad1} y {ciudad2} inhabilitada."
+                self.pila_imprevistos.append(("paro", vehiculo.get_nombre(), ciudad1, ciudad2, mensaje))
+                #print(mensaje)
+                return False
+
+    #corte lifo
+        if vehiculo.get_probabilidad_corte() is not None:
+            if random.random() < vehiculo.get_probabilidad_corte():
+                mensaje = f"  Corte de ruta en transporte {vehiculo.get_nombre().upper()} — Conexión entre {ciudad1} y {ciudad2} inhabilitada."
+                self.pila_imprevistos.append(("corte", vehiculo.get_nombre(), ciudad1, ciudad2, mensaje))
+                #print(mensaje)
+                return False
+
+  
+        return conexion.es_valida_para_vehiculo(vehiculo)
 
     def get_cantidad_ciudades(self):
         return len(self.ciudades)
@@ -108,23 +133,23 @@ class RedTransporte:
             
         return itinerario
 
-    def _calcular_costo_fijo(self, vehiculo, conexion):
+    def calcular_costo_fijo(self, vehiculo, conexion):
         if isinstance(vehiculo, Maritimo):      #Si el vehiculo es maritimo, se fija si es maritimo o fluvial
-            return float(vehiculo.calcular_costo_fijo(conexion.get_restriccion()))  #self.getrestriccion puede ser maritimo o fluvial
+            return float(vehiculo.get_costo_fijo(conexion.get_restriccion()))  #self.getrestriccion puede ser maritimo o fluvial
         return float(vehiculo.get_costo_fijo())     #si no es maritimo, se fija el costo fijo del vehiculo que corresponda
 
     def _calcular_costo_km(self, vehiculo, conexion):
         if isinstance(vehiculo, Ferroviario):
             return float(vehiculo.calcular_costo_por_km(conexion.get_distancia()))
-        return float(vehiculo.costo_km or 0)
+        return float(vehiculo.get_costo_km() or 0)
 
     def _calcular_velocidad(self, vehiculo, conexion):
         if isinstance(vehiculo, Aereo):
             if conexion.get_tipo_restriccion() == 'prob_mal_tiempo':
                 return float(vehiculo.calcular_velocidad(float(conexion.get_restriccion())))
             else:
-                return float(vehiculo.get_velocidad_maxima() or 1)
-        return float(vehiculo.velocidad or 1)
+                return float(vehiculo.get_velocidad_maxima())
+        return float(vehiculo.get_velocidad_maxima())
 
     def _construir_tramos(self, camino, vehiculo, solicitud):
         tramos = []
@@ -132,7 +157,7 @@ class RedTransporte:
         for conexion in camino:
             origen = conexion.get_nombre_ciudad1()
             destino = conexion.get_nombre_ciudad2()
-            costo_fijo = self._calcular_costo_fijo(vehiculo, conexion)
+            costo_fijo = self.calcular_costo_fijo(vehiculo, conexion)
             costo_km = self._calcular_costo_km(vehiculo, conexion)
             costo_tramo = (costo_fijo + costo_km * conexion.get_distancia()) * cant_vehiculos
             velocidad = self._calcular_velocidad(vehiculo, conexion)
@@ -168,7 +193,7 @@ class RedTransporte:
                 tiempo_total = 0
                 itinerario = self._construir_itinerario(camino, solicitud.ciudad_origen.get_nombre())
                 for conexion in camino:
-                    costo_fijo = self._calcular_costo_fijo(vehiculo, conexion)
+                    costo_fijo = self.calcular_costo_fijo(vehiculo, conexion)
                     costo_km = self._calcular_costo_km(vehiculo, conexion)
                     costo_tramo = (costo_fijo + costo_km * conexion.get_distancia()) * cant_vehiculos
                     costo_total_tramos += costo_tramo

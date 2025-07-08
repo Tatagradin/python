@@ -3,7 +3,7 @@ from Ciudad import Ciudad
 from restricciones import Restricciones
 
 class Conexion:
-
+    
     def __init__(self, ciudad1: Ciudad, ciudad2: Ciudad, distancia, tipo_transporte: str, tipo_restriccion: str = '', restriccion=None):
         try:
             self.distancia = int(distancia)

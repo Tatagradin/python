@@ -7,7 +7,7 @@ from Vehiculos import Aereo, Ferroviario, Maritimo, Automotor
 from Conexiones import Conexion
 from mostrar_mejores_caminos import MostradorCaminos
 from graficos import Graficador
-from imprevistos import pila_imprevistos
+
 
 def inicializar_red_transporte():
     """Inicializa la red de transporte cargando todos los datos necesarios."""
@@ -64,11 +64,11 @@ def main():
         # 5. Generar gráficos (ya se generan dentro de mostrar_mejores_caminos para cada solicitud)
         # Graficador.mostrar_graficos_itinerario(red_transporte)  # Línea eliminada
 
-        if pila_imprevistos:
+        if red_transporte.pila_imprevistos:
             print("\n=== IMPREVISTOS DETECTADOS (orden LIFO) ===")
-            while pila_imprevistos:
-                evento = pila_imprevistos.pop()
-                print(f"- {evento[4]}")
+            while red_transporte.pila_imprevistos:
+                evento = red_transporte.pila_imprevistos.pop()
+                print(f"- {evento[-1]}")
         print("\n=== Programa finalizado exitosamente ===")
         
     except Exception as e:
