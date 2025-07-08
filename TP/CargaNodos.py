@@ -34,9 +34,6 @@ class CargadorDeNodos(Cargador):
                 self.red_transporte.agregar_ciudad(ciudad)
                 ciudades_cargadas += 1
             
-            if ciudades_cargadas == 0:
-                raise Exception("No se pudo cargar ninguna ciudad. Verifique el archivo nodos.csv")
-                
         except Exception as e:
             raise Exception(f"Error al cargar nodos: {str(e)}")
     
