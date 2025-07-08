@@ -2,7 +2,7 @@ from Conexiones import Conexion
 from Ciudad import Ciudad
 from Vehiculos import *
 from RedTransporte import RedTransporte
-from TP.CargadorGRAL import Cargador
+from CargadorGRAL import Cargador
 
 import csv
 
