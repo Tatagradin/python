@@ -3,7 +3,7 @@ from Ciudad import Ciudad
 from Vehiculos import *
 from RedTransporte import RedTransporte
 from Solicitud import Solicitud
-from leector_csv import Cargador
+from TP.CargadorGRAL import Cargador
 
 import csv
 
