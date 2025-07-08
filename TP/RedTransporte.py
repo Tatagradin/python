@@ -109,9 +109,9 @@ class RedTransporte:
         return itinerario
 
     def _calcular_costo_fijo(self, vehiculo, conexion):
-        if isinstance(vehiculo, Maritimo):
-            return float(vehiculo.calcular_costo_fijo(conexion.get_restriccion()))
-        return float(vehiculo.get_costo_fijo())
+        if isinstance(vehiculo, Maritimo):      #Si el vehiculo es maritimo, se fija si es maritimo o fluvial
+            return float(vehiculo.calcular_costo_fijo(conexion.get_restriccion()))  #self.getrestriccion puede ser maritimo o fluvial
+        return float(vehiculo.get_costo_fijo())     #si no es maritimo, se fija el costo fijo del vehiculo que corresponda
 
     def _calcular_costo_km(self, vehiculo, conexion):
         if isinstance(vehiculo, Ferroviario):
