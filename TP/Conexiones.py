@@ -1,6 +1,6 @@
 import Vehiculos
 from Ciudad import Ciudad
-from TP.restricciones import Restricciones
+from restricciones import Restricciones
 
 class Conexion:
 
@@ -14,7 +14,6 @@ class Conexion:
         self.ciudad2 = ciudad2
         self.tipo_transporte = tipo_transporte if tipo_transporte is not None else ""
         self.tipo_restriccion = tipo_restriccion
-        # Usar la fábrica para crear la restricción adecuada
         self.restriccion = Restricciones.crear_restriccion_conexion(tipo_restriccion, restriccion)
 
     def es_valida_para_vehiculo(self, vehiculo: Vehiculos.Vehiculo) -> bool:
@@ -52,3 +51,15 @@ class Conexion:
 
     def get_nombres_ciudades(self):
         return (self.ciudad1.get_nombre(), self.ciudad2.get_nombre())
+
+    def get_distancia(self):
+        return self.distancia
+
+    def get_tipo_transporte(self):
+        return self.tipo_transporte
+
+    def get_tipo_restriccion(self):
+        return self.tipo_restriccion
+
+    def get_restriccion(self):
+        return self.restriccion

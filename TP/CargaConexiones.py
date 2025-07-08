@@ -54,7 +54,7 @@ class CargadorDeConexiones(Cargador):
                 except ValueError as e:
                     print(f"Error al crear conexión entre {origen} y {destino}: {e}")
             
-            if len(self.red_transporte.conexiones) == 0:
+            if len(self.red_transporte.get_conexiones()) == 0:
                 raise Exception("No se pudo cargar ninguna conexión. Verifique el archivo conexiones.csv")
                 
         except Exception as e:

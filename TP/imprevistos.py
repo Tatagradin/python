@@ -13,7 +13,7 @@ probabilidades_corte = {
 }
 
 def conexion_esta_disponible(conexion, vehiculo):
-    tipo = conexion.tipo_transporte.lower()
+    tipo = conexion.get_tipo_transporte().lower()
     ciudad1 = conexion.get_nombre_ciudad1()
     ciudad2 = conexion.get_nombre_ciudad2()
 

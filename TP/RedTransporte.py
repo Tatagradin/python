@@ -12,37 +12,42 @@ class RedTransporte:
         self.solicitudes = []     # Lista para almacenar las solicitudes de transporte
 
     def agregar_ciudad(self, ciudad):
-        """ Agrega una ciudad al diccionario de ciudades usando el nombre como clave """
+        #Agrega una ciudad al diccionario de ciudades usando el nombre como clave
         self.ciudades[ciudad.get_nombre()] = ciudad
 
     def agregar_conexion(self, conexion):
-        """ Agrega una conexión a la red de transporte y la registra en ambas ciudades involucradas """
+        #Agrega una conexión a la red de transporte y la registra en ambas ciudades involucradas 
         self.conexiones.append(conexion)
         conexion.get_ciudad1().agregar_conexion(conexion)
         conexion.get_ciudad2().agregar_conexion(conexion)
 
     def agregar_solicitud(self, solicitud):
-        """ Agrega una solicitud de transporte a la red """
+        #Agrega una solicitud de transporte a la red 
         self.solicitudes.append(solicitud)
 
+    def get_solicitud(self):
+        return self.solicitudes
+
     def get_ciudad(self, nombre):
-        """ Devuelve el objeto Ciudad por su nombre """
         return self.ciudades.get(nombre)
 
+    def get_conexiones(self):
+        return self.conexiones
+
     def get_conexiones_desde(self, nombre_ciudad):
-        """ Devuelve todas las conexiones salientes desde una ciudad """
+        #Devuelve todas las conexiones salientes desde una ciudad 
         ciudad = self.get_ciudad(nombre_ciudad)
         if ciudad:
-            return ciudad.posibles_conexiones
+            return ciudad.get_posibles_conexiones()
         return []
 
     def get_conexiones_por_tipo(self, tipo_transporte):
         """ Devuelve todas las conexiones de un tipo específico de transporte """
-        return list(filter(lambda c: c.tipo_transporte.lower() == tipo_transporte.lower(), self.conexiones))
+        return list(filter(lambda c: c.get_tipo_transporte().lower() == tipo_transporte.lower(), self.conexiones))
 
     def filtrar_conexiones_validas(self, vehiculo):
         """ Filtra las conexiones válidas según el tipo de vehículo y las restricciones """
-        return list(filter(lambda conexion: conexion.es_valida_para_vehiculo(vehiculo) and conexion.esta_habilitada()))
+        return list(filter(lambda conexion: conexion.es_valida_para_vehiculo(vehiculo) and conexion.esta_habilitada(), self.conexiones))
 
     def encontrar_caminos_posibles(self, origen, destino, vehiculo):
     
@@ -55,7 +60,7 @@ class RedTransporte:
             if not ciudad_obj:
                 return
 
-            for conexion in filter(lambda c: conexion_esta_disponible(c, vehiculo), ciudad_obj.posibles_conexiones):
+            for conexion in filter(lambda c: conexion_esta_disponible(c, vehiculo), ciudad_obj.get_posibles_conexiones()):
                 siguiente_ciudad = conexion.get_ciudad_opuesta(ciudad_actual).get_nombre()
                 if siguiente_ciudad not in visitadas:
                     visitadas.add(siguiente_ciudad)
@@ -68,12 +73,15 @@ class RedTransporte:
         dfs(origen, destino, [], caminos_encontrados, set([origen]))
         return caminos_encontrados
 
+    def get_cantidad_ciudades(self):
+        return len(self.ciudades)
+
     def obtener_estadisticas(self):
         """ Devuelve estadísticas básicas de la red de transporte """
         return {
-            'total_ciudades': len(self.ciudades),
-            'total_conexiones': len(self.conexiones),
-            'total_solicitudes': len(self.solicitudes),
+            'total_ciudades': self.get_cantidad_ciudades(),
+            'total_conexiones': len(self.get_conexiones()),
+            'total_solicitudes': len(self.get_solicitud()),
             'conexiones_por_tipo': {
                 'aerea': len(self.get_conexiones_por_tipo('aerea')),
                 'fluvial': len(self.get_conexiones_por_tipo('fluvial')),
@@ -107,33 +115,33 @@ class RedTransporte:
 
     def _calcular_costo_km(self, vehiculo, conexion):
         if isinstance(vehiculo, Ferroviario):
-            return float(vehiculo.calcular_costo_por_km(conexion.distancia))
+            return float(vehiculo.calcular_costo_por_km(conexion.get_distancia()))
         return float(vehiculo.costo_km or 0)
 
     def _calcular_velocidad(self, vehiculo, conexion):
         if isinstance(vehiculo, Aereo):
-            if conexion.tipo_restriccion == 'prob_mal_tiempo':
-                return float(vehiculo.calcular_velocidad(float(conexion.restriccion)))
+            if conexion.get_tipo_restriccion() == 'prob_mal_tiempo':
+                return float(vehiculo.calcular_velocidad(float(conexion.get_restriccion())))
             else:
-                return float(vehiculo.calcular_velocidad())
+                return float(vehiculo.get_velocidad_maxima() or 1)
         return float(vehiculo.velocidad or 1)
 
     def _construir_tramos(self, camino, vehiculo, solicitud):
         tramos = []
-        cant_vehiculos = (solicitud.peso + vehiculo.capacidad - 1) // vehiculo.capacidad
+        cant_vehiculos = (solicitud.get_peso() + vehiculo.get_capacidad() - 1) // vehiculo.get_capacidad()
         for conexion in camino:
             origen = conexion.get_nombre_ciudad1()
             destino = conexion.get_nombre_ciudad2()
             costo_fijo = self._calcular_costo_fijo(vehiculo, conexion)
             costo_km = self._calcular_costo_km(vehiculo, conexion)
-            costo_tramo = (costo_fijo + costo_km * conexion.distancia) * cant_vehiculos
+            costo_tramo = (costo_fijo + costo_km * conexion.get_distancia()) * cant_vehiculos
             velocidad = self._calcular_velocidad(vehiculo, conexion)
-            tiempo_tramo = conexion.distancia / velocidad if velocidad > 0 else float('inf')
+            tiempo_tramo = conexion.get_distancia() / velocidad if velocidad > 0 else float('inf')
             tiempo_tramo_minutos = round(tiempo_tramo * 60)
             tramos.append({
                 'origen': origen,
                 'destino': destino,
-                'distancia': conexion.distancia,
+                'distancia': conexion.get_distancia(),
                 'tiempo': tiempo_tramo_minutos,
                 'costo': costo_tramo
             })
@@ -150,22 +158,22 @@ class RedTransporte:
             if not caminos:
                 continue
             for camino in caminos:
-                cant_vehiculos = (solicitud.peso + vehiculo.capacidad - 1) // vehiculo.capacidad
+                cant_vehiculos = (solicitud.get_peso() + vehiculo.get_capacidad() - 1) // vehiculo.get_capacidad()
                 if isinstance(vehiculo, Automotor) and vehiculo.costo_kg is None:
-                    costo_por_kilo = float(vehiculo.calcular_costo_por_kg(solicitud.peso))
+                    costo_por_kilo = float(vehiculo.calcular_costo_por_kg(solicitud.get_peso()))
                 else:
                     costo_por_kilo = float(vehiculo.costo_kg or 0)
-                costo_vehiculo = costo_por_kilo * solicitud.peso
+                costo_vehiculo = costo_por_kilo * solicitud.get_peso()
                 costo_total_tramos = 0
                 tiempo_total = 0
                 itinerario = self._construir_itinerario(camino, solicitud.ciudad_origen.get_nombre())
                 for conexion in camino:
                     costo_fijo = self._calcular_costo_fijo(vehiculo, conexion)
                     costo_km = self._calcular_costo_km(vehiculo, conexion)
-                    costo_tramo = (costo_fijo + costo_km * conexion.distancia) * cant_vehiculos
+                    costo_tramo = (costo_fijo + costo_km * conexion.get_distancia()) * cant_vehiculos
                     costo_total_tramos += costo_tramo
                     velocidad = self._calcular_velocidad(vehiculo, conexion)
-                    tiempo_tramo = conexion.distancia / velocidad if velocidad > 0 else float('inf')
+                    tiempo_tramo = conexion.get_distancia() / velocidad if velocidad > 0 else float('inf')
                     tiempo_total += tiempo_tramo
                 costo_total = costo_total_tramos + costo_vehiculo
                 tiempo_total_minutos = round(tiempo_total * 60)

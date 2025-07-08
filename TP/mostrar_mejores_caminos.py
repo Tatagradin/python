@@ -6,7 +6,7 @@ class MostradorCaminos:
     @staticmethod
     def mostrar_mejores_caminos(red_transporte, vehiculos):
         print("\n=== Mejores caminos para cada solicitud ===")
-        for solicitud in red_transporte.solicitudes:
+        for solicitud in red_transporte.get_solicitud():
             print(f"\nSolicitud: {solicitud}")
             resultados = red_transporte.mejores_caminos_para_solicitud(solicitud, vehiculos)
             mas_rapido = resultados.get('mas_rapido')

@@ -1,6 +1,6 @@
 from RedTransporte import RedTransporte
 from CargaConexiones import CargadorDeConexiones
-from CargaSolicitudes import CargadorDeDatos
+from CargaSolicitudes import CargadorDeDato
 from CargaNodos import CargadorDeNodos
 from Ciudad import Ciudad
 from Vehiculos import Aereo, Ferroviario, Maritimo, Automotor
@@ -26,7 +26,7 @@ def inicializar_red_transporte():
    
     # 3. Cargar solicitudes
     print("\n3. Cargando solicitudes...")
-    cargador_solicitudes = CargadorDeDatos(red_transporte)
+    cargador_solicitudes = CargadorDeDato(red_transporte)
     cargador_solicitudes.cargar_solicitudes('TP/solicitudes.csv')
    
     return red_transporte
