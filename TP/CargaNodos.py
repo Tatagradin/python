@@ -22,10 +22,7 @@ class CargadorDeNodos(Cargador):
                     print(f"Fila ignorada debido a formato incorrecto: {row}")
                     continue
 
-                ciudad_nombre = row[0].strip()  # Eliminar espacios en blanco
-                if not ciudad_nombre:  # Verificar que el nombre no esté vacío
-                    print(f"Fila ignorada: nombre de ciudad vacío")
-                    continue
+                ciudad_nombre = row[0].strip()  # strip Elimina espacios en blanco
                 
                 # Verificar si la ciudad ya existe
                 if self.red_transporte.get_ciudad(ciudad_nombre):
