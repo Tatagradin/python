@@ -2,7 +2,7 @@ from Conexiones import Conexion
 from Ciudad import Ciudad
 from Vehiculos import *
 from imprevistos import conexion_esta_disponible
-
+from Solicitud import Solicitud
 
 
 class RedTransporte:
@@ -109,9 +109,10 @@ class RedTransporte:
         return itinerario
 
     def _calcular_costo_fijo(self, vehiculo, conexion):
+        from Vehiculos import Maritimo
         if isinstance(vehiculo, Maritimo):
-            return float(vehiculo.calcular_costo_fijo(getattr(conexion, 'restriccion', None)))
-        return float(vehiculo.costo_fijo or 0)
+            return float(vehiculo.calcular_costo_fijo(conexion.get_restriccion()))
+        return float(vehiculo.get_costo_fijo())
 
     def _calcular_costo_km(self, vehiculo, conexion):
         if isinstance(vehiculo, Ferroviario):

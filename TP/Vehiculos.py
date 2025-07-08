@@ -22,6 +22,9 @@ class Vehiculo:
     def get_nombre(self):
         return self.nombre
 
+    def get_costo_fijo(self):
+        return self.costo_fijo
+    
 
 class Ferroviario(Vehiculo):
     def __init__(self):
