@@ -32,20 +32,29 @@ class Vehiculo:
 
     def get_probabilidad_corte(self):
         return self.prob_corte
+
     def get_costo_km(self):
         return self.costo_km
+
+    def calcular_costo_fijo(self, conexion):
+        return float(self.costo_fijo)
+
+    def calcular_costo_km(self, conexion):
+        return float(self.costo_km)
+
+    def calcular_velocidad(self, conexion):
+        return float(self.velocidad)
+
+    def calcular_costo_por_kg(self, peso_total):
+        return float(self.costo_kg or 0)
 
 class Ferroviario(Vehiculo):
     def __init__(self):
         super().__init__("ferroviaria", 100, 150000, 100, None, 3, 0.15, 0.10)
 
-    def calcular_costo_por_km(self, distancia):
-        # Según la tabla: $20 para distancias < 200km, $15 para >= 200km
+    def calcular_costo_km(self, conexion):
+        distancia = conexion.get_distancia()
         return 20 if distancia < 200 else 15
-
-    # Si se quiere, se puede sobrescribir get_tipo_transporte
-    # def get_tipo_transporte(self):
-    #     return "ferroviaria"
 
 
 class Automotor(Vehiculo):
@@ -75,28 +84,26 @@ class Automotor(Vehiculo):
         return costo_total / peso_total
 
 
-
-
 class Maritimo(Vehiculo):
     def __init__(self):
         super().__init__("maritimo", 40, 100000, None, 15, 2.0, 0.1, None)
 
-    def get_costo_fijo(self, tipo):
-        # Según la tabla: $500 para fluvial, $1500 para marítimo
+    def calcular_costo_fijo(self, conexion):
+        tipo = conexion.get_restriccion()
         if tipo == "fluvial":
             return 500
         elif tipo == "maritimo":
             return 1500
-        return 500  # Default a fluvial
-
-
+        return 500
 
 
 class Aereo(Vehiculo):
     def __init__(self):
         super().__init__("aerea", 600, 5000, 750, 40, 10, 0.3, None)
 
-    def calcular_velocidad(self, prob_mal_tiempo=None):
-        if prob_mal_tiempo is not None and prob_mal_tiempo > 0:
-            return 400
+    def calcular_velocidad(self, conexion):
+        if conexion.get_tipo_restriccion() == 'prob_mal_tiempo':
+            prob = float(conexion.get_restriccion())
+            if prob > 0:
+                return 400
         return self.velocidad

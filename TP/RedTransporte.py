@@ -134,22 +134,13 @@ class RedTransporte:
         return itinerario
 
     def calcular_costo_fijo(self, vehiculo, conexion):
-        if isinstance(vehiculo, Maritimo):      #Si el vehiculo es maritimo, se fija si es maritimo o fluvial
-            return float(vehiculo.get_costo_fijo(conexion.get_restriccion()))  #self.getrestriccion puede ser maritimo o fluvial
-        return float(vehiculo.get_costo_fijo())     #si no es maritimo, se fija el costo fijo del vehiculo que corresponda
+        return vehiculo.calcular_costo_fijo(conexion)
 
     def _calcular_costo_km(self, vehiculo, conexion):
-        if isinstance(vehiculo, Ferroviario):
-            return float(vehiculo.calcular_costo_por_km(conexion.get_distancia()))
-        return float(vehiculo.get_costo_km() or 0)
+        return vehiculo.calcular_costo_km(conexion)
 
     def _calcular_velocidad(self, vehiculo, conexion):
-        if isinstance(vehiculo, Aereo):
-            if conexion.get_tipo_restriccion() == 'prob_mal_tiempo':
-                return float(vehiculo.calcular_velocidad(float(conexion.get_restriccion())))
-            else:
-                return float(vehiculo.get_velocidad_maxima())
-        return float(vehiculo.get_velocidad_maxima())
+        return vehiculo.calcular_velocidad(conexion)
 
     def _construir_tramos(self, camino, vehiculo, solicitud):
         tramos = []
@@ -184,10 +175,7 @@ class RedTransporte:
                 continue
             for camino in caminos:
                 cant_vehiculos = (solicitud.get_peso() + vehiculo.get_capacidad() - 1) // vehiculo.get_capacidad()
-                if isinstance(vehiculo, Automotor) and vehiculo.costo_kg is None:
-                    costo_por_kilo = float(vehiculo.calcular_costo_por_kg(solicitud.get_peso()))
-                else:
-                    costo_por_kilo = float(vehiculo.costo_kg or 0)
+                costo_por_kilo = vehiculo.calcular_costo_por_kg(solicitud.get_peso())
                 costo_vehiculo = costo_por_kilo * solicitud.get_peso()
                 costo_total_tramos = 0
                 tiempo_total = 0
