@@ -8,23 +8,23 @@ import csv
 
 class CargadorDeNodos(Cargador):
     def __init__(self, red_transporte):
-        self.red_transporte = red_transporte
+        super().__init__(red_transporte)
 
     def cargar_nodos(self, archivo_nodos):
         """Carga los nodos (ciudades) desde un archivo CSV y los agrega a la red de transporte."""
         try:
-            # Usar función común para leer el archivo
+       
             filas = CargadorDeNodos.leer_csv_comun(archivo_nodos)
             
             ciudades_cargadas = 0
             for row in filas:
-                if len(row) < 1:  # Verificar que la fila tiene al menos 1 elemento
+                if len(row) < 1:  
                     print(f"Fila ignorada debido a formato incorrecto: {row}")
                     continue
 
-                ciudad_nombre = row[0].strip()  # strip Elimina espacios en blanco
+                ciudad_nombre = row[0].strip() 
                 
-                # Verificar si la ciudad ya existe
+             
                 if self.red_transporte.get_ciudad(ciudad_nombre):
                     print(f"Advertencia: La ciudad '{ciudad_nombre}' ya existe. Ignorando duplicado.")
                     continue

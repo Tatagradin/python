@@ -9,16 +9,16 @@ import csv
 
 class CargadorDeDato(Cargador):
     def __init__(self, red_transporte):
-        self.red_transporte = red_transporte
+        super().__init__(red_transporte)
 
     def cargar_solicitudes(self, archivo_solicitudes):
         """Carga las solicitudes desde un archivo CSV y las agrega a la red de transporte."""
         try:
-            # Usar función común para leer el archivo
+          
             filas = CargadorDeDato.leer_csv_comun(archivo_solicitudes)
             
             for row in filas:
-                if len(row) < 4:  # Verificar que la fila tiene al menos 4 elementos
+                if len(row) < 4:  
                     print(f"Fila ignorada debido a formato incorrecto: {row}")
                     continue
                 

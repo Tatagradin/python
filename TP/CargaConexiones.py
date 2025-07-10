@@ -8,17 +8,16 @@ import csv
 
 class CargadorDeConexiones(Cargador):
     def __init__(self, red_transporte):
-        self.red_transporte = red_transporte
+        super().__init__(red_transporte)
 
     def cargar_conexiones(self, archivo_conexiones):
         """Carga las conexiones desde un archivo CSV y las agrega a la red de transporte."""
         try:
-            # Usar función común para leer el archivo
+          
             filas = CargadorDeConexiones.leer_csv_comun(archivo_conexiones)
             
             for row in filas:
-                if len(row) < 4:  # Verificar que la fila tiene al menos 4 elementos
-                    print(f"Fila ignorada debido a formato incorrecto: {row}")
+                if len(row) < 4:  
                     continue
 
                 origen = row[0].strip()
@@ -26,7 +25,6 @@ class CargadorDeConexiones(Cargador):
                 tipo = row[2].strip()
                 distancia = row[3].strip()
 
-                # Obtener las ciudades de la red de transporte
                 ciudad_origen = self.red_transporte.get_ciudad(origen)
                 ciudad_destino = self.red_transporte.get_ciudad(destino)
 
