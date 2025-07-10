@@ -84,7 +84,6 @@ class RedTransporte:
             if random.random() < vehiculo.get_probabilidad_paro():
                 mensaje = f"  Paro detectado en el sector {vehiculo.get_nombre().upper()} — Conexión entre {ciudad1} y {ciudad2} inhabilitada."
                 self.pila_imprevistos.append(("paro", vehiculo.get_nombre(), ciudad1, ciudad2, mensaje))
-                #print(mensaje)
                 return False
 
     #corte lifo
@@ -92,7 +91,6 @@ class RedTransporte:
             if random.random() < vehiculo.get_probabilidad_corte():
                 mensaje = f"  Corte de ruta en transporte {vehiculo.get_nombre().upper()} — Conexión entre {ciudad1} y {ciudad2} inhabilitada."
                 self.pila_imprevistos.append(("corte", vehiculo.get_nombre(), ciudad1, ciudad2, mensaje))
-                #print(mensaje)
                 return False
 
   
@@ -208,3 +206,19 @@ class RedTransporte:
         mas_barato = min(todos_resultados, key=lambda x: x['costo_total'])
         mas_rapido = min(todos_resultados, key=lambda x: x['tiempo_total'])
         return {'mas_barato': mas_barato, 'mas_rapido': mas_rapido}
+    
+    def mostrar_estadisticas(self):
+        print("\n=== Estadísticas de la red ===")
+        stats = self.obtener_estadisticas()
+        print(f"Total de ciudades: {stats['total_ciudades']}")
+        print(f"Total de conexiones: {stats['total_conexiones']}")
+        print(f"Total de solicitudes: {stats['total_solicitudes']}")
+        print("\nConexiones por tipo:")
+        for tipo, cantidad in stats['conexiones_por_tipo'].items():
+            print(f"- {tipo}: {cantidad}")
+    def mostrar_imprevistos(self):
+        if self.pila_imprevistos:
+            print("\n=== IMPREVISTOS DETECTADOS (orden LIFO) ===")
+            while self.pila_imprevistos:
+                evento = self.pila_imprevistos.pop()
+                print(f"- {evento[-1]}")  

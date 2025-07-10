@@ -40,35 +40,17 @@ def main():
         red_transporte = inicializar_red_transporte()
        
         # 2. Mostrar estadísticas de la red
-        print("\n=== Estadísticas de la red ===")
-        stats = red_transporte.obtener_estadisticas()
-        print(f"Total de ciudades: {stats['total_ciudades']}")
-        print(f"Total de conexiones: {stats['total_conexiones']}")
-        print(f"Total de solicitudes: {stats['total_solicitudes']}")
-        print("\nConexiones por tipo:")
-        for tipo, cantidad in stats['conexiones_por_tipo'].items():
-            print(f"- {tipo}: {cantidad}")
+        red_transporte.mostrar_estadisticas()
        
-        # 3. Definir vehículos disponibles
-        vehiculos = {
-            'aereo': Aereo(),
-            'maritimo': Maritimo(),
-            'ferroviario': Ferroviario(),
-            'automotor': Automotor()
-        }
-       
-        # 4. Obtener caminos para las solicitudes
-        print("\n=== Procesando solicitudes ===")
-        MostradorCaminos.mostrar_mejores_caminos(red_transporte, vehiculos)
-       
-        # 5. Generar gráficos (ya se generan dentro de mostrar_mejores_caminos para cada solicitud)
-        # Graficador.mostrar_graficos_itinerario(red_transporte)  # Línea eliminada
 
-        if red_transporte.pila_imprevistos:
-            print("\n=== IMPREVISTOS DETECTADOS (orden LIFO) ===")
-            while red_transporte.pila_imprevistos:
-                evento = red_transporte.pila_imprevistos.pop()
-                print(f"- {evento[-1]}")
+        # 3. Obtener caminos para las solicitudes
+        print("\n=== Procesando solicitudes ===")
+        mostrador = MostradorCaminos()
+        mostrador.mostrar_mejores_caminos(red_transporte)
+
+        # 4. Mostrar imprevistos de la red
+        red_transporte.mostrar_imprevistos()
+
         print("\n=== Programa finalizado exitosamente ===")
         
     except Exception as e:
